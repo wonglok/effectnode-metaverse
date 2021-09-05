@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { BackSide } from "three";
 
-export function Portal({ avatar, visible }) {
+export function Portal({ visible }) {
   let ref = useRef();
   let i = 0;
   useFrame(() => {

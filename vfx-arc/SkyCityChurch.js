@@ -29,6 +29,7 @@ import {
   AvatarNPC,
 } from "../vfx-content/AvatarNPC/AvatarNPC";
 import { SkyViewControls } from "../vfx-content/SkyViewContorls/SkyViewControls";
+import { ToSpaceShip } from "../vfx-content/Portals/ToSpaceShip";
 
 // import { AvatarPortal } from "../vfx-content/AvatarPortal/AvatarPortal";
 // import { MySelf } from "../vfx-content/MySelf/MySelf";
@@ -204,6 +205,12 @@ export function Content3D() {
                 avatarSpeed={0.9}
                 Now={Now}
               ></UserContorls> */}
+
+              <group position={[-41.3, 9.85, -5.73]}>
+                <group scale={7} position={[-1, 1, 0]}>
+                  <ToSpaceShip />
+                </group>
+              </group>
 
               {NPC && (
                 <SkyViewControls
