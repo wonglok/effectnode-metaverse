@@ -151,44 +151,6 @@ export function Content3D() {
 
       <UseBG></UseBG>
 
-      {/* <group rotation={[0, 0, 0]} position={[-6.7, 1, 2 + 9.3]}>
-        <LoginBall></LoginBall>
-      </group> */}
-
-      {/* <LoginGateR3F> */}
-      {/* <group position={[-6.7, 1, 9.3]}>
-          <AvatarPortal></AvatarPortal>
-        </group> */}
-
-      {/* <group rotation={[0, 0, 0]} position={[-6.7, 1, 1 + 9.3]}>
-          <StoryPortal></StoryPortal>
-        </group> */}
-
-      {/* {collider && <primitive object={collider}></primitive>} */}
-      {/* {collider && (
-          <MySelf
-            isSwim={true}
-            enableLight={true}
-            collider={collider}
-            envMap={envMap}
-            map={map}
-            distance={6.5}
-          ></MySelf>
-        )} */}
-      {/* </LoginGateR3F> */}
-
-      {/* {
-        <group rotation={[0, 0, 0]} position={[2.1, 0, 6]}>
-          <FaceCam>
-            <StorySelf
-              envMap={envMap}
-              holder={"genesis-story-teller-1"}
-              PlaybackState={PlaybackState}
-            ></StorySelf>
-          </FaceCam>
-        </group>
-      } */}
-
       {map && Now && (
         <group>
           <Map3D
@@ -200,12 +162,6 @@ export function Content3D() {
 
           {collider && (
             <group>
-              {/* <UserContorls
-                higherCamera={-0.7}
-                avatarSpeed={0.9}
-                Now={Now}
-              ></UserContorls> */}
-
               <group position={[-41.3, 9.85, -5.73]}>
                 <group scale={7} position={[0, 1.5, 0]}>
                   <ToSpaceShip />
@@ -229,13 +185,7 @@ export function Content3D() {
                 url={`https://d1a370nemizbjq.cloudfront.net/08cf5815-ab1d-4b6f-ab5e-5ec1858ec885.glb`}
               ></AvatarNPC>
 
-              {/* <LoginGateR3F></LoginGateR3F> */}
-
               {NPC && <Beacon NPC={NPC} />}
-
-              {/* <SceneDecorator object={map}></SceneDecorator> */}
-              {/* <TailCursor Now={Now} color={"#ffffff"}></TailCursor> */}
-              {/* <TheHelper Now={Now}></TheHelper> */}
             </group>
           )}
         </group>

@@ -24,9 +24,6 @@ import {
   MySelf as StorySelf,
 } from "../vfx-content/TellStoryCanvas/MySelf";
 
-// import { AvatarPortal } from "../vfx-content/AvatarPortal/AvatarPortal";
-// import { MySelf } from "../vfx-content/MySelf/MySelf";
-
 export default function Page() {
   return (
     <group>
@@ -82,26 +79,9 @@ export function Content3D() {
       </group>
 
       <LoginGateR3F>
-        {/* <group position={[-6.7, 1, 9.3]}>
-          <AvatarPortal></AvatarPortal>
-        </group> */}
-
         <group rotation={[0, Math.PI * 0.5, 0]} position={[-6.7, 1, 1 + 9.3]}>
-          {/*  */}
           <StoryPortal></StoryPortal>
         </group>
-
-        {/* {collider && <primitive object={collider}></primitive>} */}
-        {/* {collider && (
-          <MySelf
-            isSwim={true}
-            enableLight={true}
-            collider={collider}
-            envMap={envMap}
-            map={map}
-            distance={6.5}
-          ></MySelf>
-        )} */}
       </LoginGateR3F>
 
       {
