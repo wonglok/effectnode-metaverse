@@ -8,7 +8,7 @@ import { Sequencer } from "./Sequencer";
 
 export function WelcomeAvatar({ envMap }) {
   let gltf = useGLTF(
-    `https://d1a370nemizbjq.cloudfront.net/20077d0b-fd84-4b1c-a1b1-edd3c110423c.glb`
+    `https://d1a370nemizbjq.cloudfront.net/a4f76be5-5bd0-4eda-9c9d-55ff41700e18.glb`
   );
 
   let avatar = useMemo(() => {
@@ -20,6 +20,8 @@ export function WelcomeAvatar({ envMap }) {
 
       if (it.material) {
         if (
+          // it.material.name === "Wolf3D_Hair" ||
+          it.material.name === "Wolf3D_Body" ||
           it.material.name === "Wolf3D_Skin" ||
           it.material.name === "Wolf3D_Eye"
         ) {
@@ -51,7 +53,7 @@ export function WelcomeAvatar({ envMap }) {
     greetings: useFBX(`/rpm/rpm-actions/greetings.fbx`),
     handForward: useFBX(`/rpm/rpm-actions/hand-forward.fbx`),
     idle: useFBX(`/rpm/rpm-actions/mma-idle.fbx`),
-    gesturePointer: useFBX(`/rpm/rpm-actions/guesture-pointer.fbx`),
+    // gesturePointer: useFBX(`/rpm/rpm-actions/guesture-pointer.fbx`),
     gesturePointer2: useFBX(`/rpm/rpm-actions/guesture-pointer-2.fbx`),
     excited: useFBX(`/rpm/rpm-actions/excited.fbx`),
     spin: useFBX(`/rpm/rpm-actions/spin-in-place.fbx`),
@@ -72,6 +74,9 @@ export function WelcomeAvatar({ envMap }) {
   }, []);
 
   useFrame((st, dt) => {
+    if (dt <= 1 / 120) {
+      dt = 1 / 120;
+    }
     mixer.update(dt);
   });
 

@@ -78,23 +78,24 @@ export function Sequencer({ avatar, mixer, actions, envMap }) {
         setVFX("place");
         setBannerText("This is a place \nfor You to be You.");
       },
-      () => {
-        if (last) {
-          last?.fadeOut(0.1);
-        }
-        actions.gesturePointer.reset();
-        actions.gesturePointer.repetitions = 1;
-        actions.gesturePointer.clampWhenFinished = true;
-        actions.gesturePointer.play();
-        actions.gesturePointer.fadeIn(0.1);
-        last = actions.gesturePointer;
 
-        //
-        setVFX("social");
-        setBannerText(
-          "You can add your social media accounts or websites in your Zone."
-        );
-      },
+      // () => {
+      //   if (last) {
+      //     last?.fadeOut(0.1);
+      //   }
+      //   actions.gesturePointer.reset();
+      //   actions.gesturePointer.repetitions = 1;
+      //   actions.gesturePointer.clampWhenFinished = true;
+      //   actions.gesturePointer.play();
+      //   actions.gesturePointer.fadeIn(0.1);
+      //   last = actions.gesturePointer;
+
+      //   //
+      //   setVFX("social");
+      //   setBannerText(
+      //     "You can add your social media accounts or websites in your Zone."
+      //   );
+      // },
 
       () => {
         if (last) {

@@ -38,6 +38,9 @@ export default function StoryPage({ placeID }) {
 
 let Pages = {
   //
+
+  // spaceship
+  spaceship: dynamic(() => import("../../vfx-arc/SpaceStation")),
   church: dynamic(() => import("../../vfx-arc/SkyCityChurch")),
   // spaceship: dynamic(() => import("../../vfx-arc/SpaceStation")),
   // movie: dynamic(() => import("../../vfx-arc/MovieScene")),

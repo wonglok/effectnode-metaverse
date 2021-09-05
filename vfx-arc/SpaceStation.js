@@ -1,10 +1,9 @@
 //
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, createPortal, useThree } from "@react-three/fiber";
-import { getGPUTier } from "detect-gpu";
+import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
 import { Suspense } from "react";
 import { LoadingScreen } from "../vfx-content/welcome-page/LoadingScreen";
-import { Preload, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import {
   Map3D,
@@ -16,20 +15,42 @@ import {
 } from "../vfx-metaverse";
 import { useShaderEnvLight } from "../vfx-content/welcome-page/useShaderEnvLight";
 import { Now } from "../vfx-metaverse/lib/Now";
-import { SceneDecorator } from "../vfx-metaverse/compos/SceneDecorator";
-import { NPCHelper } from "../vfx-content/storymaker-page/NPCHelper";
-// import { AvatarSlots } from "../vfx-content/storymaker-page/AvatarSlots";
+import { Color, Object3D, sRGBEncoding } from "three";
+import { HoneyShip } from "../vfx-content/welcome-page/HoneyShip";
 import { WelcomeAvatar } from "../vfx-content/welcome-page/WelcomeAvatar";
-import { Color, Object3D, TextureFilter } from "three";
-import { AvatarNPC } from "../vfx-content/AvatarNPC/AvatarNPC";
-// import { HoneyShip } from "../vfx-content/welcome-page/HoneyShip";
-// import { LoginBall } from "../vfx-content/welcome-page/LoginBall";
-// import { LoginGate } from "../vfx-cms/common/LoginGate";
 
-export default function Page() {
+export default function Page({ placeID }) {
+  return (
+    <Canvas
+      concurrent
+      dpr={[1, 3]}
+      onCreated={({ gl }) => {
+        gl.outputEncoding = sRGBEncoding;
+      }}
+      style={{ width: "100%", height: "100%" }}
+    >
+      <PageInside placeID={placeID}></PageInside>
+    </Canvas>
+  );
+}
+
+function PageInside({ placeID }) {
+  let { scene } = useThree();
+
+  useEffect(() => {
+    return () => {
+      scene.traverse((it) => {
+        if (it?.userData?.bloomAPI) {
+          it.userData.bloomAPI.shine();
+        }
+      });
+    };
+  }, [placeID]);
+
   return (
     <group>
       <StarSky></StarSky>
+      <SimpleBloomer></SimpleBloomer>
 
       <Suspense fallback={<LoadingScreen></LoadingScreen>}>
         <Content3D></Content3D>
@@ -53,84 +74,38 @@ function UseBG() {
 }
 
 export function Content3D() {
+  // let { get } = useThree();
   let { envMap } = useShaderEnvLight({});
   let [collider, setCollider] = useState(false);
   let mapGLTF = useGLTF(`/map/spaewalk/space-walk-v003.glb`);
-  // let avaGLTF1 = useGLTF(
-  //   `https://d1a370nemizbjq.cloudfront.net/18bc89a8-de85-4a28-b3aa-d1ce4096059f.glb`
-  // );
 
   let map = useMemo(() => {
-    let map = mapGLTF.scene;
-    // let map = SkeletonUtils.clone(mapGLTF.scene);
+    let map = SkeletonUtils.clone(mapGLTF.scene);
     return map;
   }, [mapGLTF]);
 
   let o3d = new Object3D();
+
   return (
     <group>
-      <UseBG></UseBG>
-      {/* <SimpleBloomer></SimpleBloomer> */}
-
-      {/*  */}
-      <Map3D
-        onReadyCollider={({ collider }) => {
-          setCollider(collider);
-        }}
-        object={map}
-      ></Map3D>
-
       {createPortal(<primitive object={map}></primitive>, o3d)}
       <primitive object={o3d}></primitive>
 
-      {map && (
+      <ambientLight intensity={0.1} />
+      <directionalLight intensity={2} position={[0, 3, 3]}></directionalLight>
+      <directionalLight intensity={0.1} position={[0, 1, 0]}></directionalLight>
+
+      <UseBG></UseBG>
+
+      {map && Now && (
         <group>
-          <mesh
-            onClick={() => {
-              let router = require("next/router").default;
-              router.push(`/place/movie`);
+          <Map3D
+            onReadyCollider={({ collider }) => {
+              setCollider(collider);
             }}
-            position={[3, 2, 23]}
-            userData={{
-              onClick: () => {
-                let router = require("next/router").default;
-                router.push(`/place/movie`);
-              },
-              hint: "Let's Go Movie",
-            }}
-          >
-            <sphereBufferGeometry args={[0.3, 23, 23]}></sphereBufferGeometry>
-            <meshStandardMaterial
-              metalness={1}
-              roughness={0.3}
-              envMap={envMap}
-              color="#44ffff"
-            ></meshStandardMaterial>
-          </mesh>
+            object={map}
+          ></Map3D>
 
-          <SceneDecorator object={map}></SceneDecorator>
-
-          <UserContorls
-            higherCamera={-0.6}
-            avatarSpeed={0.9}
-            Now={Now}
-          ></UserContorls>
-
-          {/*
-          {collider && (
-            <group position={[-1, 0, 0]}>
-              <NPCHelper
-                isSwim={false}
-                avatarGLTF={avaGLTF1}
-                collider={collider}
-                envMap={envMap}
-                map={map}
-              ></NPCHelper>
-            </group>
-          )} */}
-          {/* {map && <AvatarSlots envMap={envMap} map={map}></AvatarSlots>} */}
-
-          {/* <AvatarNPC collider={collider} envMap={envMap} map={map}></AvatarNPC> */}
           <group
             position={[
               //
@@ -139,51 +114,28 @@ export function Content3D() {
               map.getObjectByName("welcomeAt").position.z,
             ]}
           >
-            <WelcomeAvatar envMap={envMap}></WelcomeAvatar>
+            <Suspense fallback={null}>
+              <group position={[0, 0, -30]}>
+                <HoneyShip></HoneyShip>
+              </group>
+            </Suspense>
+
+            <Suspense fallback={null}>
+              <WelcomeAvatar envMap={envMap}></WelcomeAvatar>
+            </Suspense>
           </group>
 
           {collider && (
             <group>
+              <UserContorls
+                higherCamera={-0.7}
+                avatarSpeed={1.2}
+                Now={Now}
+              ></UserContorls>
               <TailCursor Now={Now} color={"#ffffff"}></TailCursor>
-
               <TheHelper Now={Now}></TheHelper>
             </group>
           )}
-        </group>
-      )}
-    </group>
-  );
-}
-
-function Avatar({ collider, envMap, map }) {
-  return (
-    <Suspense fallback={null}>
-      <AvatarInside
-        collider={collider}
-        envMap={envMap}
-        map={map}
-      ></AvatarInside>
-    </Suspense>
-  );
-}
-
-function AvatarInside({ collider, envMap, map }) {
-  let avaGLTF2 = useGLTF(
-    `https://d1a370nemizbjq.cloudfront.net/08cf5815-ab1d-4b6f-ab5e-5ec1858ec885.glb`
-  );
-
-  return (
-    <group>
-      {collider && (
-        <group position={[0, 0, 0]}>
-          <NPCHelper
-            isSwim={true}
-            avatarGLTF={avaGLTF2}
-            collider={collider}
-            envMap={envMap}
-            map={map}
-            distance={6}
-          ></NPCHelper>
         </group>
       )}
     </group>
