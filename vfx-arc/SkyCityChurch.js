@@ -207,7 +207,7 @@ export function Content3D() {
               ></UserContorls> */}
 
               <group position={[-41.3, 9.85, -5.73]}>
-                <group scale={7} position={[-1, 1, 0]}>
+                <group scale={7} position={[0, 1.5, 0]}>
                   <ToSpaceShip />
                 </group>
               </group>
