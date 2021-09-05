@@ -20,9 +20,3 @@ export default function Admin() {
     </AdminGate>
   );
 }
-
-//
-
-//
-
-//

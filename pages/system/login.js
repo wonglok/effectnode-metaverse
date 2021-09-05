@@ -56,7 +56,7 @@ export default function System() {
           // console. Use the same OAuth client ID used for the Google provider
           // configured with GCIP or Firebase Auth.
           clientId:
-            "612670919698-l2v5mgco7g7vp2ca9slgm90hv2mnb7sr.apps.googleusercontent.com",
+            "316567530740-p9kprdg8nj6nbm3dsm4inns01tu5uslo.apps.googleusercontent.com",
         },
         firebase.auth.EmailAuthProvider.PROVIDER_ID,
       ],

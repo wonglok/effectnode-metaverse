@@ -28,6 +28,9 @@ export const Map3D = ({ object, onReadyCollider = () => {} }) => {
 
         if (it.userData.startAt) {
           it.getWorldPosition(Now.startAt);
+          it.getWorldPosition(Now.avatarAt);
+          it.getWorldPosition(Now.goingTo);
+          Now.goingTo.z += -1;
         }
 
         if (it.userData.startLookAt) {

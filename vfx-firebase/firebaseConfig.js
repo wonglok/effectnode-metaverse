@@ -1,7 +1,7 @@
 export const firebaseConfig = {
   apiKey: "AIzaSyB-tfIbfq6okbv1tYReo585t_r4zFvf-rI",
   authDomain: "effectnode.firebaseapp.com",
-  databaseURL: "https://effectnode.firebaseio.com",
+  databaseURL: "https://effectnode-metaverse.firebaseio.com/",
   projectId: "effectnode",
   storageBucket: "effectnode.appspot.com",
   messagingSenderId: "316567530740",
