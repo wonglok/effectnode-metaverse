@@ -1,0 +1,46 @@
+{
+  "name": "next-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "PORT=3000 next dev",
+    "build": "next build",
+    "start": "next start",
+    "lt": "ngrok http 3000 --subdomain wonglok --region ap"
+  },
+  "dependencies": {
+    "@react-three/drei": "^7.3.1",
+    "@react-three/fiber": "^7.0.6",
+    "@use-gesture/react": "^10.0.0-beta.23",
+    "animejs": "^3.2.1",
+    "canvas-multiline-text": "^1.0.3",
+    "canvas-txt": "^3.0.0",
+    "cors": "^2.8.5",
+    "detect-gpu": "^3.1.11",
+    "effectnode": "^1.5.3",
+    "effectnode-3dworld": "^0.0.20",
+    "effectnode-cms": "1.0.6",
+    "firebase": "^8.9.0",
+    "firebase-admin": "^9.11.1",
+    "firebaseui": "^4.8.1",
+    "fontfaceobserver": "^2.1.0",
+    "localforage": "^1.10.0",
+    "next": "^11.1.2",
+    "nipplejs": "^0.9.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-router-dom": "^5.2.1",
+    "recursive-readdir": "^2.2.2",
+    "slugify": "^1.6.0",
+    "three": "^0.131.1",
+    "three-mesh-bvh": "^0.4.2"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.3.1",
+    "file-loader": "^6.2.0",
+    "next-transpile-modules": "^8.0.0",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.7"
+  }
+}

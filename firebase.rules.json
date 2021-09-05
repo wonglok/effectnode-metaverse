@@ -1,0 +1,147 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "profiles": {
+      "$owner_id": {
+        ".read": "true",
+        ".write": "auth != null && $owner_id === auth.uid || auth != null && root.child('admin').hasChild(auth.uid)"
+      }
+    },
+    "rooms": {
+      "$roomID": {
+        "$owner_id": {
+          ".read": "true",
+          ".write": "auth != null && $owner_id === auth.uid || auth != null && root.child('admin').hasChild(auth.uid)"
+        }
+      }
+    },
+    "online": {
+      "$roomID": {
+        ".read": "true",
+        "$owner_id": {
+          ".read": "true",
+          ".write": "auth != null && $owner_id === auth.uid || auth != null && root.child('admin').hasChild(auth.uid)"
+        }
+      }
+    },
+    "usernames": {
+      "$username": {
+        ".write": "!data.exists() && auth!= null && newData.val() == auth.uid"
+      }
+    },
+    "slug": {
+      ".read": true,
+      "$slugID": {
+        ".write": "(!data.exists() || data.child('author').val() == auth.uid) && (newData.child('author').val() == auth.uid || !newData.exists())"
+      }
+    },
+    "assets": {
+      ".read": true,
+      "$assetID": {
+        ".write": "root.child('admins/'+auth.uid).exists()"
+      }
+    },
+    "card-private-info": {
+      ".read": "root.child('admins/'+auth.uid).exists()",
+      ".write": "root.child('admins/'+auth.uid).exists()"
+    },
+    //
+    "card-public-meta": {
+      "$cardID": {
+        ".read": "root.child('admins/'+auth.uid).exists()",
+        ".write": "root.child('admins/'+auth.uid).exists()"
+      }
+    },
+    "card-activation-info": {
+      "$cardID": {
+        ".read": true,
+        ".write": "root.child('admins/'+auth.uid).exists()"
+      }
+    },
+    "card-stroy-draft": {
+      "$cardID": {
+        ".read": true,
+        ".write": "root.child('card-activation-info').child($cardID).child('uid').exists() && auth != null && root.child('card-activation-info').child($cardID).child('uid').val() == auth.uid"
+      }
+    },
+    "card-stroy-info": {
+      "$cardID": {
+        ".read": true,
+        ".write": "root.child('card-activation-info').child($cardID).child('uid').exists() && auth != null && root.child('card-activation-info').child($cardID).child('uid').val() == auth.uid"
+      }
+    },
+    "card-avatar-info": {
+      "$cardID": {
+        ".read": true,
+        ".write": "root.child('card-activation-info').child($cardID).child('uid').exists() && auth != null && root.child('card-activation-info').child($cardID).child('uid').val() == auth.uid"
+      }
+    },
+    "card-room-info": {
+      "$cardID": {
+        ".read": true,
+        ".write": "root.child('card-activation-info').child($cardID).child('uid').exists() && auth != null && root.child('card-activation-info').child($cardID).child('uid').val() == auth.uid"
+      }
+    },
+    "card-meta-info": {
+      "$cardID": {
+        ".read": true,
+        ".write": "root.child('admins/'+auth.uid).exists()"
+      }
+    },
+    "test-admin": {
+      ".read": "root.child('admins/'+auth.uid).exists()",
+      ".write": "root.child('admins/'+auth.uid).exists()"
+    },
+    "test-user": {
+      ".read": "auth !== null && auth.provider === 'google'",
+      ".write": "auth !== null && auth.provider === 'google'"
+    },
+    "profile": {
+      "$owner_user_id": {
+        "canvas": {
+          ".read": "auth !== null",
+          "$canvasID": {
+            ".write": "auth !== null && auth.uid === $owner_user_id",
+            "shareACL": {
+              ".write": "auth !== null && auth.uid === $owner_user_id",
+            },
+            "ownerACL": {
+              ".write": "auth !== null && auth.uid === $owner_user_id",
+            }
+          },
+        },
+        "layout": {
+          ".read": "auth !== null",
+          "$canvasID": {
+            ".write": "auth !== null && auth.uid === $owner_user_id",
+            "shareACL": {
+              ".write": "auth !== null && auth.uid === $owner_user_id",
+            },
+            "ownerACL": {
+              ".write": "auth !== null && auth.uid === $owner_user_id",
+            }
+          },
+        }
+      },
+    },
+    "canvas": {
+      "$canvasID": {
+        ".read": true,
+        "$ownerID": {
+          ".read": true,
+          ".write": "auth !== null && auth.uid === $ownerID || auth !== null && root.child('profile').child($ownerID).child('canvas').child($canvasID).child('shareACL').hasChild(auth.uid)"
+        }
+      }
+    },
+    "layout": {
+      "$layoutID": {
+        ".read": true,
+        "$ownerID": {
+          ".read": true,
+          ".write": "auth !== null && auth.uid === $ownerID || auth !== null && root.child('profile').child($ownerID).child('layout').child($layoutID).child('shareACL').hasChild(auth.uid)"
+        }
+      }
+    }
+  }
+}
