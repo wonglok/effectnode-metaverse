@@ -10,6 +10,7 @@ export function ToChurch({ envMap }) {
       }}
       onPointerEnter={(ev) => {
         ev.object.userData.forceBloom = true;
+        router.prefetch(`/place/church`);
       }}
       onPointerLeave={(ev) => {
         ev.object.userData.forceBloom = false;

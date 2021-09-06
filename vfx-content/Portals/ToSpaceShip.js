@@ -10,6 +10,7 @@ export function ToSpaceShip({ envMap }) {
       }}
       onPointerEnter={(ev) => {
         ev.object.userData.enableBloom = true;
+        router.prefetch(`/place/spaceship`);
       }}
       onPointerLeave={(ev) => {
         ev.object.userData.enableBloom = false;
