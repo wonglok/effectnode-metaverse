@@ -185,10 +185,10 @@ export function Content3D() {
 
               <FlyTeleport
                 start={"zone_a1"}
-                dest={"zone_c0"}
+                dest={"zone_b2"}
                 map={map}
                 envMap={envMap}
-                title="Church Central"
+                title="To North End"
               />
 
               <FlyTeleport
@@ -221,6 +221,14 @@ export function Content3D() {
                 envMap={envMap}
                 map={map}
                 title="The Brith Place"
+              />
+
+              <FlyTeleport
+                start={"zone_b1"}
+                dest={"zone_a0"}
+                map={map}
+                envMap={envMap}
+                title="The Birth Place"
               />
 
               {Now && (
