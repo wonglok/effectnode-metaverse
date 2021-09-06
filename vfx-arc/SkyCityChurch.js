@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
 import { Suspense } from "react";
 import { LoadingScreen } from "../vfx-content/welcome-page/LoadingScreen";
-import { useGLTF } from "@react-three/drei";
+import { Plane, useFBO, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import {
   Map3D,
@@ -16,7 +16,7 @@ import {
 import { useShaderEnvLight } from "../vfx-content/welcome-page/useShaderEnvLight";
 import { Now } from "../vfx-metaverse/lib/Now";
 // import { SceneDecorator } from "../vfx-metaverse/compos/SceneDecorator";
-import { Color, Object3D, sRGBEncoding } from "three";
+import { Color, Object3D, Scene, sRGBEncoding, PerspectiveCamera } from "three";
 // import { LoginGateR3F } from "../vfx-content/LoginGateR3F/LoginGateR3F";
 // import { LoginBall } from "../vfx-content/welcome-page/LoginBall";
 // import { StoryPortal } from "../vfx-content/StoryPortal/StoryPortal";
@@ -32,6 +32,7 @@ import {
 import { SkyViewControls } from "../vfx-content/SkyViewContorls/SkyViewControls";
 import { MapPortal } from "../vfx-content/Portals/MapPortal";
 import { FlyTeleport } from "../vfx-content/Portals/FlyTeleport";
+import { MiniMap } from "../vfx-content/MiniMap/MiniMap";
 
 //
 // import { AvatarPortal } from "../vfx-content/AvatarPortal/AvatarPortal";
@@ -142,7 +143,7 @@ function Beacon({ NPC }) {
 }
 
 export function Content3D() {
-  // let { get } = useThree();
+  let { get } = useThree();
   let { envMap } = useShaderEnvLight({});
   let [collider, setCollider] = useState(false);
   let mapGLTF = useGLTF(`/map/heavenly-platforms/heavenly-platforms.glb`);
@@ -161,6 +162,8 @@ export function Content3D() {
       {createPortal(<primitive object={map}></primitive>, o3d)}
 
       <primitive object={o3d}></primitive>
+
+      {/* {map && <MiniMap map={map}></MiniMap>} */}
 
       <ambientLight intensity={0.1} />
       <directionalLight intensity={2} position={[0, 3, 3]}></directionalLight>
