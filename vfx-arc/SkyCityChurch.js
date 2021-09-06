@@ -91,11 +91,12 @@ function UseBG() {
   return null;
 }
 
+let t = 0;
 function Beacon({ NPC }) {
   let ref = useRef();
 
-  useFrame(({ clock }) => {
-    let t = clock.getElapsedTime();
+  useFrame((st, dt) => {
+    t += dt;
     ref.current.position.set(
       //
       NPC.goingTo.x,
@@ -142,7 +143,6 @@ function Beacon({ NPC }) {
 export function Content3D() {
   // let { get } = useThree();
   let { envMap } = useShaderEnvLight({});
-  let [NPC, setNPC] = useState(Now);
   let [collider, setCollider] = useState(false);
   let mapGLTF = useGLTF(`/map/heavenly-platforms/heavenly-platforms.glb`);
   mapGLTF.scene.rotation.y = Math.PI * 0.5;
@@ -194,7 +194,7 @@ export function Content3D() {
                 </group>
               </group>
 
-              {NPC && (
+              {Now && (
                 <SkyViewControls
                   collider={collider}
                   Now={Now}
@@ -209,30 +209,11 @@ export function Content3D() {
                 url={`https://d1a370nemizbjq.cloudfront.net/08cf5815-ab1d-4b6f-ab5e-5ec1858ec885.glb`}
               ></AvatarNPC>
 
-              {NPC && <Beacon NPC={NPC} />}
+              {Now && <Beacon NPC={Now} />}
             </group>
           )}
         </group>
       )}
     </group>
   );
-}
-
-function FaceCam({ children }) {
-  let ref = useRef();
-
-  //
-  useFrame(({ camera }) => {
-    if (ref.current) {
-      //
-      ref.current.lookAt(
-        camera.position.x,
-        ref.current.position.y,
-        camera.position.z
-      );
-    }
-    //
-  });
-
-  return <group ref={ref}>{children}</group>;
 }
