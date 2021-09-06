@@ -53,10 +53,9 @@ export function SkyViewControls({ collider, Now }) {
       if (zoom.current <= 0.1) {
         zoom.current -= delta;
       }
-      if (zoom.current >= 2) {
+      if (zoom.current >= 4) {
         zoom.current -= delta;
       }
-      // console.log(st);
     },
     {
       target: get().gl.domElement,
@@ -73,8 +72,8 @@ export function SkyViewControls({ collider, Now }) {
       if (zoom.current <= 0.1) {
         zoom.current = 0.1;
       }
-      if (zoom.current >= 2) {
-        zoom.current = 2;
+      if (zoom.current >= 4) {
+        zoom.current = 4;
       }
 
       Now.goingTo.copy(Now.avatarAt);
@@ -91,8 +90,8 @@ export function SkyViewControls({ collider, Now }) {
     orbit.object.position.set(
       //
       Now.avatarAt.x,
-      Now.avatarAt.y + 30 * Math.pow(zoomInter.current, 1),
-      Now.avatarAt.z + 30 * zoomInter.current
+      Now.avatarAt.y + Math.pow(30, 1) * Math.pow(zoomInter.current, 1),
+      Now.avatarAt.z + Math.pow(30, 1) * Math.pow(zoomInter.current, 1 / 2)
     );
 
     orbit.target.copy(Now.avatarAt);

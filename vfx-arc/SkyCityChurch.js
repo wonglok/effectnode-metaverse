@@ -30,8 +30,8 @@ import {
   AvatarNPC,
 } from "../vfx-content/AvatarNPC/AvatarNPC";
 import { SkyViewControls } from "../vfx-content/SkyViewContorls/SkyViewControls";
-import { ToSpaceShip } from "../vfx-content/Portals/ToSpaceShip";
-import { TeleportChurchCore } from "../vfx-content/Portals/TeleportChurchCore";
+import { MapPortal } from "../vfx-content/Portals/MapPortal";
+import { FlyTeleport } from "../vfx-content/Portals/FlyTeleport";
 
 //
 // import { AvatarPortal } from "../vfx-content/AvatarPortal/AvatarPortal";
@@ -127,6 +127,7 @@ function Beacon({ NPC }) {
             enableBloom: true,
           }}
         >
+          {/*  */}
           <meshStandardMaterial
             flatShading={true}
             color="#bababa"
@@ -182,17 +183,45 @@ export function Content3D() {
               {/*  */}
               {/*  */}
 
-              <group position={[-70.56, 15.53, 0.02]}>
-                <group scale={7} position={[0, 1.5, 0]}>
-                  <TeleportChurchCore />
-                </group>
-              </group>
+              <FlyTeleport
+                start={"zone_a1"}
+                dest={"zone_c0"}
+                map={map}
+                envMap={envMap}
+                title="Church Central"
+              />
 
-              <group position={[-41.3, 9.85, -5.73]}>
-                <group scale={7} position={[0, 1.5, 0]}>
-                  <ToSpaceShip />
-                </group>
-              </group>
+              <FlyTeleport
+                start={"zone_a2"}
+                dest={"zone_e1"}
+                map={map}
+                envMap={envMap}
+                title="The West End"
+              />
+
+              <FlyTeleport
+                start={"zone_e2"}
+                dest={"zone_a0"}
+                envMap={envMap}
+                map={map}
+                title="The East End"
+              />
+
+              <FlyTeleport
+                start={"zone_a4"}
+                dest={"zone_f1"}
+                envMap={envMap}
+                map={map}
+                title="The South End"
+              />
+
+              <FlyTeleport
+                start={"zone_f2"}
+                dest={"zone_a0"}
+                envMap={envMap}
+                map={map}
+                title="The Brith Place"
+              />
 
               {Now && (
                 <SkyViewControls

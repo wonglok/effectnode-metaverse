@@ -2,24 +2,28 @@ import { Text } from "@react-three/drei";
 import router from "next/router";
 
 //
-export function ToSpaceShip({ envMap }) {
+export function MapPortal({ envMap, title = "Church", page, preloadGLB }) {
   return (
     <mesh
       onClick={() => {
-        router.push(`/place/spaceship`);
+        router.push(page);
       }}
       onPointerEnter={(ev) => {
-        ev.object.userData.enableBloom = true;
-        router.prefetch(`/place/spaceship`);
+        ev.object.userData.forceBloom = true;
+        router.prefetch(page);
+
+        if (preloadGLB) {
+          fetch(preloadGLB);
+        }
       }}
       onPointerLeave={(ev) => {
-        ev.object.userData.enableBloom = false;
+        ev.object.userData.forceBloom = false;
       }}
       userData={{
         onClick: () => {
-          router.push(`/place/spaceship`);
+          router.push(page);
         },
-        hint: "Spaceship!!",
+        hint: title,
       }}
     >
       <Text
@@ -36,14 +40,14 @@ export function ToSpaceShip({ envMap }) {
         outlineWidth={0.005}
         userData={{ enableBloom: true }}
       >
-        Spaceship!!
+        {title}
       </Text>
       <sphereBufferGeometry args={[0.3, 23, 23]}></sphereBufferGeometry>
       <meshStandardMaterial
         metalness={1}
         roughness={0.0}
         envMap={envMap}
-        color="#44ffff"
+        color="#ffffff"
       ></meshStandardMaterial>
     </mesh>
   );

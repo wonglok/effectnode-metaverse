@@ -57,14 +57,6 @@ export class MapNPC {
 
       player.position.addScaledVector(playerVelocity, delta);
 
-      if (player.position.y <= -50) {
-        // player.position.y = 0;
-        player.position.copy(startAt);
-        Now.goingTo.copy(startAt);
-        Now.goingTo.z += 1;
-        playerVelocity.y = 0.0;
-      }
-
       if (Now.avatarFlyTo.length() !== 0.0) {
         player.position.copy(Now.avatarFlyTo);
         player.position.y += 1;
@@ -73,6 +65,14 @@ export class MapNPC {
         playerVelocity.x = 0;
         playerVelocity.z = 0;
         Now.avatarFlyTo.set(0, 0, 0);
+      }
+
+      if (player.position.y <= -50) {
+        // player.position.y = 0;
+        player.position.copy(startAt);
+        Now.goingTo.copy(startAt);
+        Now.goingTo.z += 1;
+        playerVelocity.y = 0.0;
       }
 
       avatarDir.copy(Now.goingTo).sub(player.position);

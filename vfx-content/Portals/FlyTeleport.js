@@ -1,21 +1,32 @@
 import { Text } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree, createPortal } from "@react-three/fiber";
 import router from "next/router";
 import { useRef } from "react";
 import { DoubleSide, Vector3 } from "three";
 import { Now } from "../../vfx-metaverse/lib/Now";
 
 //
-export function TeleportChurchCore({ envMap }) {
+export function FlyTeleport({ map, envMap, title = "", start, dest }) {
+  let { scene } = useThree();
   //
+  let destination = map.getObjectByName(dest);
+  if (!destination) {
+    throw new Error(`start ${start} dest: ${dest}`);
+  }
+  let startingPoint = map.getObjectByName(start);
+  if (!startingPoint) {
+    throw new Error(`start ${start} dest: ${dest}`);
+  }
+
   let ref = useRef();
   let text = useRef();
   let wp = new Vector3();
   useFrame(() => {
     if (ref.current) {
       ref.current.getWorldPosition(wp);
-      if (Now.avatarAt.distanceTo(wp) <= 3) {
-        Now.avatarFlyTo.fromArray([-0.69, -1.35, 0.28]);
+      wp.y = Now.avatarAt.y;
+      if (Now.avatarAt.distanceTo(wp) <= 3.5) {
+        destination.getWorldPosition(Now.avatarFlyTo);
       } else {
       }
     }
@@ -27,8 +38,15 @@ export function TeleportChurchCore({ envMap }) {
     }
   });
 
-  return (
+  useFrame(() => {
+    if (ref.current.position) {
+      startingPoint.getWorldPosition(ref.current.position);
+    }
+  });
+
+  return createPortal(
     <mesh
+      scale={7}
       ref={ref}
       // onClick={() => {
       //   Now.avatarFlyTo.fromArray([-0.69, -1.35, 0.28]);
@@ -37,11 +55,11 @@ export function TeleportChurchCore({ envMap }) {
         // onClick: () => {
         //   Now.avatarFlyTo.fromArray([-0.69, -1.35, 0.28]);
         // },
-        hint: "Snap to Church Map Center",
+        hint: title,
       }}
     >
       <Text
-        position={[0, 0.4, 0]}
+        position={[0, 0.3, 0]}
         textAlign={"center"}
         anchorX={"center"}
         anchorY={"bottom"}
@@ -55,7 +73,7 @@ export function TeleportChurchCore({ envMap }) {
         userData={{ enableBloom: true }}
         ref={text}
       >
-        Snap to Church Map Center
+        {title}
       </Text>
       <cylinderBufferGeometry
         args={[0.45, 0.45, 0.3, 23, 23, true]}
@@ -68,6 +86,7 @@ export function TeleportChurchCore({ envMap }) {
         side={DoubleSide}
         transparent={0.2}
       ></meshStandardMaterial>
-    </mesh>
+    </mesh>,
+    scene
   );
 }

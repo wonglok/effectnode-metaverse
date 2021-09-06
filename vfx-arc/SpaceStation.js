@@ -18,7 +18,6 @@ import { Now } from "../vfx-metaverse/lib/Now";
 import { Color, Object3D, sRGBEncoding } from "three";
 import { HoneyShip } from "../vfx-content/welcome-page/HoneyShip";
 import { WelcomeAvatar } from "../vfx-content/welcome-page/WelcomeAvatar";
-import { ToChurch } from "../vfx-content/Portals/ToChurch";
 
 export default function Page({ placeID }) {
   return (
@@ -124,9 +123,7 @@ export function Content3D() {
               <WelcomeAvatar envMap={envMap}></WelcomeAvatar>
             </Suspense>
 
-            <group position={[-1, 1, 0]}>
-              <ToChurch />
-            </group>
+            <group position={[-1, 1, 0]}></group>
           </group>
 
           {collider && (
