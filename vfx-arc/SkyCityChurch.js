@@ -30,6 +30,7 @@ import {
 } from "../vfx-content/AvatarNPC/AvatarNPC";
 import { SkyViewControls } from "../vfx-content/SkyViewContorls/SkyViewControls";
 import { ToSpaceShip } from "../vfx-content/Portals/ToSpaceShip";
+import { TeleportChurchCore } from "../vfx-content/Portals/TeleportChurchCore";
 
 // import { AvatarPortal } from "../vfx-content/AvatarPortal/AvatarPortal";
 // import { MySelf } from "../vfx-content/MySelf/MySelf";
@@ -126,7 +127,7 @@ function Beacon({ NPC }) {
 export function Content3D() {
   // let { get } = useThree();
   let { envMap } = useShaderEnvLight({});
-  let [NPC, setNPC] = useState(false);
+  let [NPC, setNPC] = useState(Now);
   let [collider, setCollider] = useState(false);
   let mapGLTF = useGLTF(`/map/heavenly-platforms/heavenly-platforms.glb`);
   mapGLTF.scene.rotation.y = Math.PI * 0.5;
@@ -154,6 +155,7 @@ export function Content3D() {
       {map && Now && (
         <group>
           <Map3D
+            simulate={false}
             onReadyCollider={({ collider }) => {
               setCollider(collider);
             }}
@@ -162,6 +164,15 @@ export function Content3D() {
 
           {collider && (
             <group>
+              {/*  */}
+              {/*  */}
+
+              <group position={[-70.56, 15.53, 0.02]}>
+                <group scale={7} position={[0, 1.5, 0]}>
+                  <TeleportChurchCore />
+                </group>
+              </group>
+
               <group position={[-41.3, 9.85, -5.73]}>
                 <group scale={7} position={[0, 1.5, 0]}>
                   <ToSpaceShip />
@@ -171,7 +182,6 @@ export function Content3D() {
               {NPC && (
                 <SkyViewControls
                   collider={collider}
-                  NPC={NPC}
                   Now={Now}
                 ></SkyViewControls>
               )}
@@ -180,8 +190,7 @@ export function Content3D() {
                 collider={collider}
                 envMap={envMap}
                 map={map}
-                Now={Now}
-                setNPC={setNPC}
+                NPC={Now}
                 url={`https://d1a370nemizbjq.cloudfront.net/08cf5815-ab1d-4b6f-ab5e-5ec1858ec885.glb`}
               ></AvatarNPC>
 

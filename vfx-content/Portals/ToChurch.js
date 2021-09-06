@@ -1,3 +1,4 @@
+import { Text } from "@react-three/drei";
 import router from "next/router";
 
 //
@@ -7,6 +8,12 @@ export function ToChurch({ envMap }) {
       onClick={() => {
         router.push(`/place/church`);
       }}
+      onPointerEnter={(ev) => {
+        ev.object.userData.forceBloom = true;
+      }}
+      onPointerLeave={(ev) => {
+        ev.object.userData.forceBloom = false;
+      }}
       userData={{
         onClick: () => {
           router.push(`/place/church`);
@@ -14,6 +21,22 @@ export function ToChurch({ envMap }) {
         hint: "Church",
       }}
     >
+      <Text
+        position={[0, 0.4, 0]}
+        textAlign={"center"}
+        anchorX={"center"}
+        anchorY={"bottom"}
+        maxWidth={0.7}
+        fontSize={0.12}
+        font={`/font/Cronos-Pro-Light_12448.ttf`}
+        frustumCulled={false}
+        color={"white"}
+        outlineColor={"black"}
+        outlineWidth={0.005}
+        userData={{ enableBloom: true }}
+      >
+        Church
+      </Text>
       <sphereBufferGeometry args={[0.3, 23, 23]}></sphereBufferGeometry>
       <meshStandardMaterial
         metalness={1}

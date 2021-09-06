@@ -7,7 +7,7 @@ export function AvatarNPC({
   collider,
   envMap,
   map,
-  Now,
+  NPC,
   setNPC = () => {},
   url = `https://d1a370nemizbjq.cloudfront.net/08cf5815-ab1d-4b6f-ab5e-5ec1858ec885.glb`,
 }) {
@@ -17,7 +17,7 @@ export function AvatarNPC({
         collider={collider}
         envMap={envMap}
         map={map}
-        Now={Now}
+        NPC={NPC}
         url={url}
         setNPC={setNPC}
       ></AvatarInside>
@@ -25,7 +25,7 @@ export function AvatarNPC({
   );
 }
 
-function AvatarInside({ url, collider, envMap, map, setNPC = () => null }) {
+function AvatarInside({ url, collider, envMap, map, NPC }) {
   let avaGLTF2 = useGLTF(url);
 
   return (
@@ -39,7 +39,7 @@ function AvatarInside({ url, collider, envMap, map, setNPC = () => null }) {
             envMap={envMap}
             map={map}
             distance={6}
-            setNPC={setNPC}
+            NPC={NPC}
           ></NPCHelper>
         </group>
       )}

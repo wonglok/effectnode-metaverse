@@ -7,7 +7,11 @@ import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { PCFSoftShadowMap, PointLight } from "three";
 import { Now } from "../lib/Now";
 
-export const Map3D = ({ object, onReadyCollider = () => {} }) => {
+export const Map3D = ({
+  object,
+  simulate = true,
+  onReadyCollider = () => {},
+}) => {
   const { get } = useThree();
   const { mini } = useMiniEngine();
   const colliderRef = useRef();
@@ -148,7 +152,9 @@ export const Map3D = ({ object, onReadyCollider = () => {} }) => {
         }
       }
 
-      mapPlayer.onSimulate();
+      if (simulate) {
+        mapPlayer.onSimulate();
+      }
     });
 
     return () => {

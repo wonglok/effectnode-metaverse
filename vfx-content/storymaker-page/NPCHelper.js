@@ -37,16 +37,16 @@ export function NPCHelper({
   avatarGLTF,
   envMap,
   collider,
-  setNPC = () => {},
+  NPC,
 }) {
-  let NPC = useMemo(() => {
-    let now = makeNow();
-    return now;
-  }, []);
+  // let NPC = useMemo(() => {
+  //   let now = makeNow();
+  //   return now;
+  // }, []);
 
-  useEffect(() => {
-    setNPC(NPC);
-  }, [NPC]);
+  // useEffect(() => {
+  //   setNPC(NPC);
+  // }, [NPC]);
 
   let group = useRef();
   let { mini } = useMiniEngine();
@@ -74,28 +74,6 @@ export function NPCHelper({
   useFrame(({ camera }) => {
     NPC.avatarSpeed = isSwim ? 0.35 : 0.45;
 
-    // forward
-    //   .copy({
-    //     x: 0,
-    //     y: 0,
-    //     z: 1,
-    //   })
-    //   .applyEuler(camera.rotation)
-    //   .multiplyScalar(-1 * distance);
-
-    // Now.followerPt.copy(Now.avatarAt).add(forward);
-    // NPC.goingTo.set(
-    //   Number((Now.followerPt.x * 1).toFixed(0) / 1),
-    //   Number((Now.followerPt.y * 1).toFixed(0) / 1),
-    //   Number((Now.followerPt.z * 1).toFixed(0) / 1)
-    // );
-
-    // NPC.goingTo.set(
-    //   Number((Now.cursorPos.x * 1).toFixed(0) / 1),
-    //   Number((Now.cursorPos.y * 1).toFixed(0) / 1),
-    //   Number((Now.cursorPos.z * 1).toFixed(0) / 1)
-    // );
-
     let gp = group.current;
     let ava = gp.getObjectByName("avatar");
     if (gp && ava) {
@@ -105,18 +83,6 @@ export function NPCHelper({
         NPC.avatarAt.y,
         NPC.avatarAt.z
       );
-
-      // if (NPC.avatarMode === "standing") {
-      //   ava.getWorldPosition(wp);
-      //   dir.set(camera.position.x, wp.y, camera.position.z);
-      //   dir2.lerp(dir, 0.0023);
-      //   ava.lookAt(dir2);
-      // } else {
-      //   ava.getWorldPosition(wp);
-      //   dir.fromArray([NPC.goingTo.x, wp.y, NPC.goingTo.z]);
-      //   dir2.lerp(dir, 0.1);
-      //   ava.lookAt(dir2);
-      // }
 
       NPC.avatarAtDelta.copy(lastWP);
       ava.getWorldPosition(wp);
@@ -154,7 +120,7 @@ export function NPCHelper({
 function DreamyHelper({ isSwim, enableLight, avatarGLTF, envMap, npc }) {
   let avatar = useMemo(() => {
     let scene = avatarGLTF.scene;
-    scene.visible = false;
+    // scene.visible = false;
     scene.traverse((it) => {
       it.frustumCulled = false;
       it.castShadow = true;
@@ -200,7 +166,9 @@ function DreamyHelper({ isSwim, enableLight, avatarGLTF, envMap, npc }) {
 
   useEffect(() => {
     let last = false;
-    npc.avatarMode = "running";
+    setTimeout(() => {
+      npc.avatarMode = "running";
+    });
     npc.avatarMode = "standing";
 
     return npc.onEvent("avatarMode", () => {

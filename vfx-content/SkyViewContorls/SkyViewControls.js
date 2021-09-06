@@ -4,23 +4,23 @@ import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import { useAutoEvent } from "../../vfx-metaverse";
 import { usePinch, useWheel } from "@use-gesture/react";
 import { MathUtils } from "three";
-export function SkyViewControls({ collider, NPC, Now }) {
+export function SkyViewControls({ collider, Now }) {
   let { get } = useThree();
 
   let orbit = useMemo(() => {
-    NPC.goingTo.set(
-      //
-      Now.startAt.x,
-      Now.startAt.y,
-      Now.startAt.z
-    );
+    // Now.goingTo.set(
+    //   //
+    //   Now.startAt.x,
+    //   Now.startAt.y,
+    //   Now.startAt.z
+    // );
 
-    NPC.avatarAt.set(
-      //
-      Now.startAt.x,
-      Now.startAt.y,
-      Now.startAt.z
-    );
+    // Now.avatarAt.set(
+    //   //
+    //   Now.startAt.x,
+    //   Now.startAt.y,
+    //   Now.startAt.z
+    // );
 
     let orbit = new MapControls(get().camera, get().gl.domElement);
     orbit.screenSpacePanning = true;
@@ -45,13 +45,13 @@ export function SkyViewControls({ collider, NPC, Now }) {
   useWheel(
     (st) => {
       st.event.preventDefault();
-      zoom.current += -st.delta[0] / 6;
+      zoom.current += -st.delta[0] / 10;
 
       if (zoom.current <= 0.1) {
-        zoom.current = 0.1;
+        zoom.current -= -st.delta[0] / 10;
       }
       if (zoom.current >= 2) {
-        zoom.current = 2;
+        zoom.current -= -st.delta[0] / 10;
       }
       // console.log(st);
     },
@@ -74,8 +74,8 @@ export function SkyViewControls({ collider, NPC, Now }) {
         zoom.current = 2;
       }
 
-      NPC.goingTo.copy(NPC.avatarAt);
-      NPC.isDown = false;
+      Now.goingTo.copy(Now.avatarAt);
+      Now.isDown = false;
     },
     {
       target: get().gl.domElement,
@@ -87,15 +87,15 @@ export function SkyViewControls({ collider, NPC, Now }) {
     zoomInter.current = MathUtils.lerp(zoomInter.current, zoom.current, 0.05);
     orbit.object.position.set(
       //
-      NPC.avatarAt.x,
-      NPC.avatarAt.y + 30 * Math.pow(zoomInter.current, 2),
-      NPC.avatarAt.z + 30 * zoomInter.current
+      Now.avatarAt.x,
+      Now.avatarAt.y + 30 * Math.pow(zoomInter.current, 1),
+      Now.avatarAt.z + 30 * zoomInter.current
     );
-    // orbit.object.position.copy(NPC.avatarAtDelta);
 
-    orbit.target.copy(NPC.avatarAt);
+    orbit.target.copy(Now.avatarAt);
     orbit.update();
-    orbit.object.lookAt(NPC.avatarAt.x, NPC.avatarAt.y - 1.3, NPC.avatarAt.z);
+    orbit.object.lookAt(Now.avatarAt.x, Now.avatarAt.y - 1.3, Now.avatarAt.z);
+    // orbit.object.position.copy(Now.avatarAtDelta);
   });
 
   useEffect(() => {
@@ -117,16 +117,16 @@ export function SkyViewControls({ collider, NPC, Now }) {
     );
 
     if (hit) {
-      NPC.goingTo.copy(hit.point);
+      Now.goingTo.copy(hit.point);
       console.log(hit.point.toArray().map((e) => Number(e.toFixed(2))));
     }
   };
-  NPC.isDown = false;
+  Now.isDown = false;
 
   useAutoEvent(
     "mousedown",
     () => {
-      NPC.isDown = true;
+      Now.isDown = true;
       castSync();
     },
     { passive: false },
@@ -136,7 +136,7 @@ export function SkyViewControls({ collider, NPC, Now }) {
   useAutoEvent(
     "mouseup",
     () => {
-      NPC.isDown = false;
+      Now.isDown = false;
       castSync();
     },
     { passive: false },
@@ -146,7 +146,7 @@ export function SkyViewControls({ collider, NPC, Now }) {
   useAutoEvent(
     "touchstart",
     () => {
-      NPC.isDown = true;
+      Now.isDown = true;
       castSync();
     },
     { passive: false },
@@ -156,7 +156,7 @@ export function SkyViewControls({ collider, NPC, Now }) {
   useAutoEvent(
     "touchend",
     () => {
-      NPC.isDown = false;
+      Now.isDown = false;
       castSync();
     },
     { passive: false },
@@ -164,7 +164,7 @@ export function SkyViewControls({ collider, NPC, Now }) {
   );
 
   useFrame(() => {
-    if (NPC.isDown) {
+    if (Now.isDown) {
       castSync();
     }
   });

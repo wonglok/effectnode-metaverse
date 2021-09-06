@@ -65,6 +65,16 @@ export class MapNPC {
         playerVelocity.y = 0.0;
       }
 
+      if (Now.avatarFlyTo.length() !== 0.0) {
+        player.position.copy(Now.avatarFlyTo);
+        player.position.y += 1;
+        Now.goingTo.copy(Now.avatarFlyTo);
+        playerVelocity.y = 0.0;
+        playerVelocity.x = 0;
+        playerVelocity.z = 0;
+        Now.avatarFlyTo.set(0, 0, 0);
+      }
+
       avatarDir.copy(Now.goingTo).sub(player.position);
       avatarDir.y = 0;
       const size = avatarDir.length();
@@ -139,6 +149,7 @@ export class MapNPC {
 
       //
       Now.avatarAt.copy(player.position);
+
       // Now.avatarAt.y += 0.1;
 
       rotationCopier.position.copy(player.position);

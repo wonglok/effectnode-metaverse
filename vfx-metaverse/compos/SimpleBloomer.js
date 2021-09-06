@@ -183,7 +183,12 @@ export class BloomLayer {
 
       //
       scene.traverse((it) => {
-        if (it?.userData?.enableBloom || it?.material?.userData?.enableBloom) {
+        if (
+          it?.userData?.enableBloom ||
+          it?.material?.userData?.enableBloom ||
+          it?.userData?.forceBloom ||
+          it?.material?.userData?.forceBloom
+        ) {
           if (it?.userData?.bloomAPI?.shine) {
             it.userData.bloomAPI.shine();
           }

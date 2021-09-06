@@ -8,11 +8,17 @@ export function ToSpaceShip({ envMap }) {
       onClick={() => {
         router.push(`/place/spaceship`);
       }}
+      onPointerEnter={(ev) => {
+        ev.object.userData.enableBloom = true;
+      }}
+      onPointerLeave={(ev) => {
+        ev.object.userData.enableBloom = false;
+      }}
       userData={{
         onClick: () => {
           router.push(`/place/spaceship`);
         },
-        hint: "Church",
+        hint: "Spaceship!!",
       }}
     >
       <Text
@@ -29,7 +35,7 @@ export function ToSpaceShip({ envMap }) {
         outlineWidth={0.005}
         userData={{ enableBloom: true }}
       >
-        Church
+        Spaceship!!
       </Text>
       <sphereBufferGeometry args={[0.3, 23, 23]}></sphereBufferGeometry>
       <meshStandardMaterial

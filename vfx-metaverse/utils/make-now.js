@@ -12,6 +12,7 @@ export const makeNow = () => {
     camAt: new Vector3(),
     avatarAtDelta: new Vector3(),
     avatarAt: new Vector3(),
+    avatarFlyTo: new Vector3(),
     avatarHead: new Vector3(),
     avatarRot: new Vector3(),
     avatarFaceLook: new Vector3(),
