@@ -47,8 +47,8 @@ export default function StoryPage({ cardID }) {
 
 let Maps = {
   GenesisCard: dynamic(() => import("../../../../vfx-arc/GenesisCard")),
-  spaceship: dynamic(() => import("../../../../vfx-arc/SpaceStation")),
-  movie: dynamic(() => import("../../../../vfx-arc/MovieScene")),
+  // spaceship: dynamic(() => import("../../../../vfx-arc/SpaceStation")),
+  // movie: dynamic(() => import("../../../../vfx-arc/MovieScene")),
 };
 
 function PageRouter({ cardID }) {
