@@ -1,13 +1,4 @@
-//
-import { Canvas, useThree } from "@react-three/fiber";
-import { SimpleBloomer } from "../../vfx-metaverse";
-import { sRGBEncoding } from "three";
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-
-// import { NPCHelper } from "../../vfx-content/storymaker-page/NPCHelper";
-// import { AvatarSlots } from "../../vfx-content/storymaker-page/AvatarSlots";
-// import { LoginGate } from "../../vfx-cms/common/LoginGate";
 
 export async function getServerSideProps(context) {
   let placeID = context?.query?.placeID || null;
@@ -29,21 +20,12 @@ export async function getServerSideProps(context) {
 }
 
 export default function StoryPage({ placeID }) {
-  return (
-    <div className="full">
-      <PageRouter placeID={placeID}></PageRouter>
-    </div>
-  );
+  return <PageRouter placeID={placeID}></PageRouter>;
 }
 
 let Pages = {
-  //
-
-  // spaceship
-  spaceship: dynamic(() => import("../../vfx-arc/SpaceStation")),
-  church: dynamic(() => import("../../vfx-arc/SkyCityChurch")),
-  // spaceship: dynamic(() => import("../../vfx-arc/SpaceStation")),
-  // movie: dynamic(() => import("../../vfx-arc/MovieScene")),
+  spaceship: dynamic(() => import("../../vfx/places/SpaceStation")),
+  church: dynamic(() => import("../../vfx/places/SkyCityChurch")),
 };
 
 function PageRouter({ placeID }) {
