@@ -24,6 +24,7 @@ import { Color, Object3D, sRGBEncoding } from "three";
 //   makePlayBack,
 //   MySelf as StorySelf,
 // } from "../vfx-content/TellStoryCanvas/MySelf";
+
 import {
   // ApplyNowStateToNPCState,
   AvatarNPC,
@@ -32,6 +33,7 @@ import { SkyViewControls } from "../vfx-content/SkyViewContorls/SkyViewControls"
 import { ToSpaceShip } from "../vfx-content/Portals/ToSpaceShip";
 import { TeleportChurchCore } from "../vfx-content/Portals/TeleportChurchCore";
 
+//
 // import { AvatarPortal } from "../vfx-content/AvatarPortal/AvatarPortal";
 // import { MySelf } from "../vfx-content/MySelf/MySelf";
 
@@ -100,8 +102,7 @@ function Beacon({ NPC }) {
       NPC.goingTo.y,
       NPC.goingTo.z
     );
-    ref.current.position.y += 1.5;
-    ref.current.position.y += Math.sin(t * 3.0);
+    ref.current.rotation.y = t * 3.0;
 
     if (NPC.isDown) {
       ref.current.visible = true;
@@ -115,11 +116,25 @@ function Beacon({ NPC }) {
   });
 
   return (
-    <group>
-      <mesh ref={ref}>
-        <meshStandardMaterial metalness={1} roughness={0} />
-        <sphereBufferGeometry></sphereBufferGeometry>
-      </mesh>
+    <group position={[0, 1, 0]} scale={[1, 1, 1]}>
+      <group ref={ref}>
+        <mesh
+          position={[0, 0.5, 0]}
+          rotation={[Math.PI * 0.25, 0, Math.PI * 0.25]}
+          scale={[1, 1, 1]}
+          userData={{
+            enableBloom: true,
+          }}
+        >
+          <meshStandardMaterial
+            flatShading={true}
+            color="#bababa"
+            metalness={1}
+            roughness={0}
+          />
+          <icosahedronBufferGeometry args={[1, 0]}></icosahedronBufferGeometry>
+        </mesh>
+      </group>
     </group>
   );
 }

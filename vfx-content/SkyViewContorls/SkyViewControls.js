@@ -45,13 +45,16 @@ export function SkyViewControls({ collider, Now }) {
   useWheel(
     (st) => {
       st.event.preventDefault();
-      zoom.current += -st.delta[0] / 10;
+
+      let delta = -st.delta[0] / 10;
+
+      zoom.current += delta;
 
       if (zoom.current <= 0.1) {
-        zoom.current -= -st.delta[0] / 10;
+        zoom.current -= delta;
       }
       if (zoom.current >= 2) {
-        zoom.current -= -st.delta[0] / 10;
+        zoom.current -= delta;
       }
       // console.log(st);
     },
