@@ -107,7 +107,7 @@ function Beacon({ NPC }) {
     if (NPC.isDown) {
       ref.current.visible = true;
     } else {
-      if (NPC.avatarAt.distanceTo(NPC.goingTo) <= 4) {
+      if (NPC.avatarAt.distanceTo(NPC.goingTo) <= 3.5) {
         ref.current.visible = false;
       } else {
         ref.current.visible = true;
