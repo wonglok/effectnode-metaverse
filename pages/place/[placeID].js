@@ -19,14 +19,9 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default function StoryPage({ placeID }) {
+export default function PlacePage({ placeID }) {
   return <PageRouter placeID={placeID}></PageRouter>;
 }
-
-let Pages = {
-  spaceship: dynamic(() => import("../../vfx/places/SpaceStation")),
-  church: dynamic(() => import("../../vfx/places/SkyCityChurch")),
-};
 
 function PageRouter({ placeID }) {
   let MyPage = <div></div>;
@@ -37,3 +32,8 @@ function PageRouter({ placeID }) {
 
   return <MyPage placeID={placeID}></MyPage>;
 }
+
+let Pages = {
+  spaceship: dynamic(() => import("../../vfx/places/spaceship/SpaceStation")),
+  church: dynamic(() => import("../../vfx/places/church/SkyCityChurch")),
+};

@@ -1,0 +1,143 @@
+import { useFBX, useGLTF } from "@react-three/drei";
+import { createPortal, useFrame } from "@react-three/fiber";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { AnimationMixer, Object3D, Vector3 } from "three";
+import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
+import { getFirebase } from "../../firebase/firelib";
+import { AQ } from "../../places/church/Assets";
+
+export function PlayerDisplay({ Now }) {
+  let [show, setShow] = useState(false);
+  let [url, setURL] = useState(false);
+  useEffect(() => {
+    setURL(
+      `https://d1a370nemizbjq.cloudfront.net/a4f76be5-5bd0-4eda-9c9d-55ff41700e18.glb`
+    );
+    setShow(true);
+  }, []);
+  return (
+    <group position={[0, -2.315, 0]}>
+      <Suspense fallback={null}>
+        {show && <PlayerInternal url={url} Now={Now}></PlayerInternal>}
+      </Suspense>
+    </group>
+  );
+}
+
+function PlayerInternal({ Now, url, isSwim = false }) {
+  let gltf = useGLTF(url);
+
+  let avatar = useMemo(() => {
+    let cloned = SkeletonUtils.clone(gltf.scene);
+    return cloned;
+  }, [gltf]);
+
+  let o3d = new Object3D();
+
+  return (
+    <group>
+      {/*  */}
+      {/*  */}
+      {/*  */}
+      {createPortal(<primitive object={avatar}></primitive>, o3d)}
+
+      <group>
+        <primitive object={o3d}></primitive>
+      </group>
+      <Pose isSwim={isSwim} avatar={avatar} Now={Now}></Pose>
+    </group>
+  );
+}
+
+function Pose({ avatar, Now, isSwim = false }) {
+  let wp = new Vector3();
+  let dir = new Vector3();
+  let dir2 = new Vector3();
+  let forward = new Vector3();
+  let lastWP = new Vector3();
+
+  useFrame(({ camera }) => {
+    Now.avatarSpeed = isSwim ? 0.35 : 0.45;
+
+    let gp = avatar;
+    let ava = avatar;
+    if (gp && ava) {
+      gp.position.set(
+        //
+        Now.avatarAt.x,
+        Now.avatarAt.y,
+        Now.avatarAt.z
+      );
+
+      Now.avatarAtDelta.copy(lastWP);
+      ava.getWorldPosition(wp);
+      Now.avatarAtDelta.sub(wp);
+
+      dir.fromArray([Now.goingTo.x, wp.y, Now.goingTo.z]);
+      dir2.lerp(dir, 0.2);
+      ava.lookAt(dir2);
+
+      Now.avatarRot.x = ava.rotation.x;
+      Now.avatarRot.y = ava.rotation.y;
+      Now.avatarRot.z = ava.rotation.z;
+    }
+  });
+
+  let mixer = useMemo(() => {
+    return new AnimationMixer(avatar);
+  }, [avatar]);
+
+  let fbx = isSwim
+    ? {
+        // running: useFBX(`/rpm/rpm-actions-locomotion/running.fbx`),
+        // standing: useFBX(`/rpm/rpm-actions-locomotion/standing.fbx`),
+        running: useFBX(AQ.swimming.url),
+        standing: useFBX(AQ.floating.url),
+      }
+    : {
+        running: useFBX(AQ.running.url),
+        standing: useFBX(AQ.standing.url),
+        // running: useFBX(`/rpm/rpm-actions-locomotion/swim-forward.fbx`),
+        // standing: useFBX(`/rpm/rpm-actions-locomotion/swim-float.fbx`),
+      };
+
+  let actions = useMemo(() => {
+    let obj = {};
+    for (let kn in fbx) {
+      obj[kn] = mixer.clipAction(fbx[kn].animations[0]);
+    }
+    return obj;
+  }, [fbx]);
+
+  useEffect(() => {
+    let last = false;
+    setTimeout(() => {
+      Now.avatarMode = "running";
+    });
+    Now.avatarMode = "standing";
+
+    return Now.onEvent("avatarMode", () => {
+      let current = actions[Now.avatarMode];
+      if (last && last !== current) {
+        last.fadeOut(0.2);
+      }
+      last = current;
+
+      if (Now.avatarMode) {
+      }
+
+      current.reset();
+      current.play();
+      current.fadeIn(0.15);
+    });
+  }, [avatar]);
+
+  useFrame((st, dt) => {
+    if (dt <= 1 / 60) {
+      dt = 1 / 60;
+    }
+    mixer.update(dt);
+  });
+
+  return <group></group>;
+}
