@@ -84,9 +84,9 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
   useFrame(({ camera, scene }) => {
     lv = MathUtils.lerp(lv, progress.current, 0.1);
 
-    roll.getPoint(lv + 0.03, at);
+    roll.getPoint(lv + 0.015, at);
     roll.getPoint(lv + -0.01, back);
-    roll.getPoint(lv + -0.01, back2);
+    roll.getPoint(lv + -0.02, back2);
 
     Now.goingTo.lerp(at, 1);
     camera.position.copy(back2);
@@ -97,15 +97,15 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       head.getWorldPosition(headWP);
       camera.getWorldDirection(camWD);
 
-      camera.position.lerp(Now.avatarAt, 0.1);
+      camera.position.lerp(Now.avatarAt, 1);
 
-      camWD.normalize().multiplyScalar(0.43);
+      camWD.normalize().multiplyScalar(3);
       camWD.y = 0;
 
       camera.position.sub(camWD);
 
       camera.position.y = 1.65;
-      camera.lookAt(Now.goingTo.x, 1.65, Now.goingTo.z);
+      camera.lookAt(Now.goingTo.x, 1.5, Now.goingTo.z);
     }
   });
 
