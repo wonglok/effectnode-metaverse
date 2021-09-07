@@ -26,6 +26,9 @@ let getInternal = () => {
     keyA: false,
     keyS: false,
     keyD: false,
+
+    //
+    locked: false,
     //
     cursorPos: new Vector3(),
     cursorNormal: new Vector3(),

@@ -11,6 +11,7 @@ let toBlobURL = (array) => {
     new Blob([array], { type: "application/octet-stream" })
   );
 };
+
 export function Preload({ Assets, children }) {
   let [show, setShow] = useState(false);
 
@@ -19,9 +20,7 @@ export function Preload({ Assets, children }) {
       return new Promise((resolve) => {
         Disk.getItem(asset.rawurl).then((arrayBuffer) => {
           if (arrayBuffer) {
-            //
             asset.cacheURL = toBlobURL(arrayBuffer);
-
             resolve();
           } else {
             let loader = new FileLoader();

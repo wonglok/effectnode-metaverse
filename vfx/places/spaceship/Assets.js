@@ -4,10 +4,11 @@ export const AQ = {
   floorMap: {
     slug: "floorMap",
     type: "glb",
-    rawurl: "/map/heavenly-platforms/heavenly-platforms.glb",
+    rawurl: "/map/spaewalk/space-walk-v003.glb",
     cacheURL: false,
     preload: false,
   },
+
   ...CommonAssets,
 };
 

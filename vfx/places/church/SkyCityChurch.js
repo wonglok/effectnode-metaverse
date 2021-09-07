@@ -14,6 +14,7 @@ import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
 import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
+import { FlyTeleport } from "../../game/Portals/FlyTeleport";
 
 export default function SkyCityChurch() {
   return (
@@ -78,7 +79,6 @@ function MapContent() {
       )}
 
       <PlayerCollider
-        floor={floor}
         Now={Now}
         colliderMesh={colliderManager.collider}
       ></PlayerCollider>
@@ -89,6 +89,62 @@ function MapContent() {
         colliderMesh={colliderManager.collider}
         Now={Now}
       ></SkyViewControls>
+
+      <Portals envMap={envMap} floor={floor}></Portals>
+    </group>
+  );
+}
+
+function Portals({ floor, envMap }) {
+  return (
+    <group>
+      <FlyTeleport
+        start={"zone_a1"}
+        dest={"zone_b2"}
+        floor={floor}
+        envMap={envMap}
+        title="To North End"
+      />
+
+      <FlyTeleport
+        start={"zone_a2"}
+        dest={"zone_e1"}
+        floor={floor}
+        envMap={envMap}
+        title="The West End"
+      />
+
+      <FlyTeleport
+        start={"zone_e2"}
+        dest={"zone_a0"}
+        envMap={envMap}
+        floor={floor}
+        title="The East End"
+      />
+
+      <FlyTeleport
+        start={"zone_a4"}
+        dest={"zone_f1"}
+        envMap={envMap}
+        floor={floor}
+        title="The South End"
+      />
+
+      <FlyTeleport
+        start={"zone_f2"}
+        dest={"zone_a0"}
+        envMap={envMap}
+        floor={floor}
+        title="The Brith Place"
+      />
+
+      <FlyTeleport
+        start={"zone_b1"}
+        dest={"zone_a0"}
+        floor={floor}
+        envMap={envMap}
+        title="The Birth Place"
+      />
     </group>
   );
 }

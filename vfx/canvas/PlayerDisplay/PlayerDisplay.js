@@ -6,7 +6,7 @@ import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { getFirebase } from "../../firebase/firelib";
 import { AQ } from "../../places/church/Assets";
 
-export function PlayerDisplay({ Now }) {
+export function PlayerDisplay({ Now, envMap }) {
   let [show, setShow] = useState(false);
   let [url, setURL] = useState(false);
   useEffect(() => {
@@ -18,17 +18,41 @@ export function PlayerDisplay({ Now }) {
   return (
     <group position={[0, -2.315, 0]}>
       <Suspense fallback={null}>
-        {show && <PlayerInternal url={url} Now={Now}></PlayerInternal>}
+        {show && (
+          <PlayerInternal envMap={envMap} url={url} Now={Now}></PlayerInternal>
+        )}
       </Suspense>
     </group>
   );
 }
 
-function PlayerInternal({ Now, url, isSwim = false }) {
+function PlayerInternal({ envMap, Now, url, isSwim = false }) {
   let gltf = useGLTF(url);
 
   let avatar = useMemo(() => {
     let cloned = SkeletonUtils.clone(gltf.scene);
+    cloned.traverse((it) => {
+      //cloned
+      it.frustumCulled = false;
+      if (
+        //
+        it.material &&
+        (it.material.name == "Wolf3D_Teeth" ||
+          it.material.name == "Wolf3D_Skin" ||
+          it.material.name == "Wolf3D_Eye" ||
+          it.material.name == "Wolf3D_Body")
+      ) {
+      } else {
+        if (it.material) {
+          it.material = it.material.clone();
+          it.material.envMap = envMap;
+          it.material.envMapIntensity = 2;
+          it.material.metalnessMapIntensity = 2;
+          it.material.roughness = 0.1;
+          it.material.metalness = 1;
+        }
+      }
+    });
     return cloned;
   }, [gltf]);
 
