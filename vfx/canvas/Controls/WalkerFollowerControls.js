@@ -4,7 +4,7 @@ import { CatmullRomCurve3, MathUtils, Vector3 } from "three";
 import { useDrag, useWheel } from "@use-gesture/react";
 import { Now } from "../../store/Now";
 // import { createPortal } from "react-dom";
-export function WalkerControls({ floor, cameraHeight = 1.5 }) {
+export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
   let { get } = useThree();
   //
 
@@ -84,34 +84,33 @@ export function WalkerControls({ floor, cameraHeight = 1.5 }) {
   useFrame(({ camera, scene }) => {
     lv = MathUtils.lerp(lv, progress.current, 0.1);
 
-    roll.getPoint(lv + 0.01, at);
+    roll.getPoint(lv + 0.03, at);
     roll.getPoint(lv + -0.01, back);
     roll.getPoint(lv + -0.01, back2);
 
     Now.goingTo.lerp(at, 1);
+    camera.position.copy(back2);
+    camera.lookAt(back);
 
     let head = scene.getObjectByName("Head");
     if (head) {
       head.getWorldPosition(headWP);
       camera.getWorldDirection(camWD);
 
-      camera.position.lerp(Now.avatarAt, 0.3);
+      camera.position.lerp(Now.avatarAt, 0.1);
 
-      camWD.normalize().multiplyScalar(0.8);
+      camWD.normalize().multiplyScalar(0.43);
       camWD.y = 0;
 
       camera.position.sub(camWD);
 
-      camera.position.y = 1.5;
-      camera.lookAt(Now.goingTo.x, 1.8, Now.goingTo.z);
+      camera.position.y = 1.65;
+      camera.lookAt(Now.goingTo.x, 1.65, Now.goingTo.z);
     }
   });
 
   useEffect(() => {
-    //
-    //
     get().scene.add(get().camera);
-
     return () => {
       get().scene.remove(get().camera);
     };

@@ -16,7 +16,7 @@ export function PlayerDisplay({
   let [url, setURL] = useState(false);
   useEffect(() => {
     setURL(
-      `https://d1a370nemizbjq.cloudfront.net/a4f76be5-5bd0-4eda-9c9d-55ff41700e18.glb`
+      `https://d1a370nemizbjq.cloudfront.net/9a9da86c-f9dc-421c-94c8-728fce2ad129.glb`
     );
     setShow(true);
   }, []);

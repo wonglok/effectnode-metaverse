@@ -12,7 +12,7 @@ import { Now } from "../../store/Now";
 import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
-import { WalkerControls } from "../../canvas/Controls/WalkerControls";
+import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
 import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
 
 export default function SpaceStation() {
@@ -87,7 +87,7 @@ function MapContent() {
         envMap={envMap}
         Now={Now}
         floor={floor}
-        isSwim={true}
+        isSwim={false}
       ></PlayerDisplay>
 
       {/*
@@ -96,7 +96,7 @@ function MapContent() {
         colliderMesh={colliderManager.collider}
       ></FirstCamControls> */}
 
-      <WalkerControls floor={floor}></WalkerControls>
+      <WalkerFollowerControls floor={floor}></WalkerFollowerControls>
     </group>
   );
 }
