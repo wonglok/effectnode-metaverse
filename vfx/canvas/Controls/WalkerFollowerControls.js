@@ -26,7 +26,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
 
   let progress = useRef(0);
 
-  let speed = 0.0033;
+  let speed = 0.003;
 
   //
   useDrag(
@@ -34,7 +34,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       state.event.preventDefault();
 
       let change = state.movement[1] || 0;
-      let delta = change / 100;
+      let delta = change / 200;
 
       if (delta >= speed) {
         delta = speed;
@@ -43,7 +43,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
         delta = -speed;
       }
 
-      progress.current += delta;
+      progress.current += delta * 0.3;
     },
     {
       target: get().gl.domElement,
