@@ -73,9 +73,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
     }
   );
 
-  // roll
   let lv = progress.current;
-
   let at = new Vector3();
   let back = new Vector3();
   let back2 = new Vector3();
@@ -97,9 +95,9 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       head.getWorldPosition(headWP);
       camera.getWorldDirection(camWD);
 
-      camera.position.lerp(Now.avatarAt, 0.2);
+      camera.position.lerp(Now.avatarAt, 0.1);
 
-      camWD.normalize().multiplyScalar(3);
+      camWD.normalize().multiplyScalar(2);
       camWD.y = 0;
 
       camera.position.copy(back2);
