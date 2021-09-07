@@ -26,7 +26,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
 
   let progress = useRef(0);
 
-  let speed = 0.0035;
+  let speed = 0.0033;
 
   //
   useDrag(
