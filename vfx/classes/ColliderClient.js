@@ -85,7 +85,7 @@ export class ColliderClient {
 
       if (size >= 0.1) {
         // 0.1
-        player.position.addScaledVector(avatarDir, 0.04);
+        player.position.addScaledVector(avatarDir, 0.04 * 1.3);
         Now.avatarMode = "running";
       } else {
         Now.avatarMode = "standing";

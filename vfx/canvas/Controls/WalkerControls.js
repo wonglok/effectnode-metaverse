@@ -1,8 +1,10 @@
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useThree, createPortal } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import { CatmullRomCurve3, MathUtils, Vector3 } from "three";
 import { useDrag, useWheel } from "@use-gesture/react";
-export function WalkerControls({ floor }) {
+import { Now } from "../../store/Now";
+// import { createPortal } from "react-dom";
+export function WalkerControls({ floor, cameraHeight = 1.5 }) {
   let { get } = useThree();
   //
 
@@ -23,7 +25,7 @@ export function WalkerControls({ floor }) {
 
   let progress = useRef(0);
 
-  let speed = 0.015;
+  let speed = 0.0035;
 
   //
   useDrag(
@@ -73,28 +75,61 @@ export function WalkerControls({ floor }) {
 
   // roll
   let lv = progress.current;
-  let lookAt = new Vector3();
-  let lookAtLerp = new Vector3();
-  useFrame(({ camera }) => {
-    //
+
+  let at = new Vector3();
+  let back = new Vector3();
+  let back2 = new Vector3();
+  let headWP = new Vector3();
+  let camWD = new Vector3();
+  useFrame(({ camera, scene }) => {
     lv = MathUtils.lerp(lv, progress.current, 0.1);
-    roll.getPoint(lv, camera.position);
-    camera.position.y = 1.3;
 
-    roll.getPoint(lv + 0.03, lookAt);
-    lookAt.y = camera.position.y;
+    roll.getPoint(lv + 0.01, at);
+    roll.getPoint(lv + -0.01, back);
+    roll.getPoint(lv + -0.01, back2);
 
-    lookAtLerp.lerp(lookAt, 0.56);
-    camera.lookAt(lookAtLerp);
+    Now.goingTo.lerp(at, 1);
+
+    let head = scene.getObjectByName("Head");
+    if (head) {
+      head.getWorldPosition(headWP);
+      camera.getWorldDirection(camWD);
+
+      camera.position.lerp(Now.avatarAt, 0.3);
+
+      camWD.normalize().multiplyScalar(0.8);
+      camWD.y = 0;
+
+      camera.position.sub(camWD);
+
+      camera.position.y = 1.5;
+      camera.lookAt(Now.goingTo.x, 1.8, Now.goingTo.z);
+    }
   });
 
   useEffect(() => {
     //
     //
+    get().scene.add(get().camera);
+
+    return () => {
+      get().scene.remove(get().camera);
+    };
   }, []);
 
   return (
     <group>
+      {createPortal(
+        <group>
+          <pointLight intensity={2}></pointLight>
+          <directionalLight
+            intensity={1}
+            position={[0, 0, 0]}
+          ></directionalLight>
+        </group>,
+        get().camera
+      )}
+
       {/*  */}
       {/*  */}
     </group>

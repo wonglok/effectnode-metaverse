@@ -6,7 +6,12 @@ import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { getFirebase } from "../../firebase/firelib";
 import { AQ } from "../../places/church/Assets";
 
-export function PlayerDisplay({ Now, envMap }) {
+export function PlayerDisplay({
+  Now,
+  envMap,
+  isSwim = false,
+  lookBack = false,
+}) {
   let [show, setShow] = useState(false);
   let [url, setURL] = useState(false);
   useEffect(() => {
@@ -19,14 +24,26 @@ export function PlayerDisplay({ Now, envMap }) {
     <group position={[0, -2.315, 0]}>
       <Suspense fallback={null}>
         {show && (
-          <PlayerInternal envMap={envMap} url={url} Now={Now}></PlayerInternal>
+          <PlayerInternal
+            lookBack={lookBack}
+            envMap={envMap}
+            url={url}
+            Now={Now}
+            isSwim={isSwim}
+          ></PlayerInternal>
         )}
       </Suspense>
     </group>
   );
 }
 
-function PlayerInternal({ envMap, Now, url, isSwim = false }) {
+function PlayerInternal({
+  envMap,
+  Now,
+  url,
+  lookBack = false,
+  isSwim = false,
+}) {
   let gltf = useGLTF(url);
 
   let avatar = useMemo(() => {
@@ -68,12 +85,17 @@ function PlayerInternal({ envMap, Now, url, isSwim = false }) {
       <group>
         <primitive object={o3d}></primitive>
       </group>
-      <Pose isSwim={isSwim} avatar={avatar} Now={Now}></Pose>
+      <Pose
+        isSwim={isSwim}
+        lookBack={lookBack}
+        avatar={avatar}
+        Now={Now}
+      ></Pose>
     </group>
   );
 }
 
-function Pose({ avatar, Now, isSwim = false }) {
+function Pose({ avatar, Now, isSwim = false, lookBack = false }) {
   let wp = new Vector3();
   let dir = new Vector3();
   let dir2 = new Vector3();
@@ -93,9 +115,23 @@ function Pose({ avatar, Now, isSwim = false }) {
         Now.avatarAt.z
       );
 
-      Now.avatarAtDelta.copy(lastWP);
-      ava.getWorldPosition(wp);
-      Now.avatarAtDelta.sub(wp);
+      if (lookBack) {
+        if (Now.avatarMode === "standing") {
+          ava.getWorldPosition(wp);
+          dir.set(camera.position.x, wp.y, camera.position.z);
+          dir2.lerp(dir, 0.01);
+          ava.lookAt(dir2);
+        } else {
+          ava.getWorldPosition(wp);
+          dir.fromArray([Now.goingTo.x, wp.y, Now.goingTo.z]);
+          dir2.lerp(dir, 0.1);
+          ava.lookAt(dir2);
+        }
+      } else {
+        Now.avatarAtDelta.copy(lastWP);
+        ava.getWorldPosition(wp);
+        Now.avatarAtDelta.sub(wp);
+      }
 
       dir.fromArray([Now.goingTo.x, wp.y, Now.goingTo.z]);
       dir2.lerp(dir, 0.2);

@@ -13,6 +13,7 @@ import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
 import { WalkerControls } from "../../canvas/Controls/WalkerControls";
+import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
 
 export default function SpaceStation() {
   return (
@@ -57,9 +58,9 @@ function MapContent() {
     return floor;
   }, [gltf]);
 
-  // let colliderManager = useMemo(() => {
-  //   return new ColliderManager({ floor, scene: get().scene });
-  // }, [floor]);
+  let colliderManager = useMemo(() => {
+    return new ColliderManager({ floor, scene: get().scene });
+  }, [floor]);
 
   let o3d = new Object3D();
 
@@ -69,21 +70,28 @@ function MapContent() {
       <primitive object={o3d}></primitive>
       {createPortal(<primitive object={floor}></primitive>, o3d)}
 
-      {/* {createPortal(
+      {createPortal(
         <group visible={false}>
           <primitive object={colliderManager.preview}></primitive>
         </group>,
         o3d
-      )} */}
-      {/*
+      )}
+
       <PlayerCollider
         Now={Now}
         colliderMesh={colliderManager.collider}
-      ></PlayerCollider> */}
+      ></PlayerCollider>
 
-      {/* <PlayerDisplay envMap={envMap} Now={Now} floor={floor}></PlayerDisplay> */}
+      <PlayerDisplay
+        lookBack={true}
+        envMap={envMap}
+        Now={Now}
+        floor={floor}
+        isSwim={true}
+      ></PlayerDisplay>
 
-      {/* <FirstCamControls
+      {/*
+      <FirstCamControls
         Now={Now}
         colliderMesh={colliderManager.collider}
       ></FirstCamControls> */}
