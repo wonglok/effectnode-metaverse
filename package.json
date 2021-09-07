@@ -16,6 +16,7 @@
     "canvas-multiline-text": "^1.0.3",
     "canvas-txt": "^3.0.0",
     "cors": "^2.8.5",
+    "daisyui": "^1.14.0",
     "detect-gpu": "^3.1.11",
     "effectnode": "^1.5.3",
     "effectnode-3dworld": "^0.0.20",

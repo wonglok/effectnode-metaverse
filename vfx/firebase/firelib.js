@@ -51,12 +51,17 @@ export function testAdminRights() {
 }
 
 export function testUserRights() {
-  return getFirebase().database().ref(`/test-user`).set(Math.random());
+  return getMe().then((user) => {
+    return getFirebase()
+      .database()
+      .ref(`/test-user/${user.uid}`)
+      .set(Math.random());
+  });
 }
 
 export function getMe() {
   getFirebase();
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -67,6 +72,7 @@ export function getMe() {
       } else {
         // User is signed out
         // ...
+        reject();
       }
     });
   });
