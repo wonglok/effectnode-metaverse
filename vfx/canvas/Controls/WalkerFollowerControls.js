@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { CatmullRomCurve3, MathUtils, Vector3 } from "three";
 import { useDrag, useWheel } from "@use-gesture/react";
 import { Now } from "../../store/Now";
+import { useAutoEvent } from "../../utils/use-auto-event";
 // import { createPortal } from "react-dom";
 export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
   let { get } = useThree();
@@ -30,9 +31,9 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
   //
   useDrag(
     (state) => {
-      // state.event.preventDefault();
+      state.event.preventDefault();
 
-      let change = state.velocity[1] || 0;
+      let change = state.movement[1] || 0;
       let delta = change / 100;
 
       if (delta >= speed) {
@@ -41,17 +42,21 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       if (delta <= -speed) {
         delta = -speed;
       }
+
       progress.current += delta;
     },
     {
       target: get().gl.domElement,
+      eventOptions: {
+        passive: false,
+      },
     }
   );
 
   useWheel(
     (state) => {
       state.event.preventDefault();
-      // state.event.preventDefault();
+
       let change = state.delta[1] || 0;
       let delta = change / 100;
 
@@ -72,6 +77,16 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       },
     }
   );
+
+  useAutoEvent("touchstart", (ev) => {
+    ev.preventDefault();
+  });
+  useAutoEvent("touchmove", (ev) => {
+    ev.preventDefault();
+  });
+  useAutoEvent("touchend", (ev) => {
+    ev.preventDefault();
+  });
 
   let lv = progress.current;
   let at = new Vector3();
