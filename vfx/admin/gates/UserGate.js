@@ -21,8 +21,9 @@ export function UserGate({ children }) {
   }, []);
 
   //
+  //
   return (
-    <div>
+    <>
       {ok === "loading" && (
         <section className="bg-white font-family-karla h-screen">
           <div className="w-full flex flex-wrap">
@@ -53,6 +54,7 @@ export function UserGate({ children }) {
           </div>
         </section>
       )}
+
       {ok === "fail" && (
         <section className="bg-white font-family-karla h-screen">
           <div className="w-full flex flex-wrap">
@@ -93,8 +95,9 @@ export function UserGate({ children }) {
           </div>
         </section>
       )}
+
       {ok === "ok" && children}
-    </div>
+    </>
   );
 }
 

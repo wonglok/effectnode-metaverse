@@ -1,11 +1,16 @@
 import { useFrame, useThree, createPortal } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { CatmullRomCurve3, MathUtils, Vector3 } from "three";
+import { CatmullRomCurve3, MathUtils, Object3D, Vector3 } from "three";
 import { useDrag, useWheel } from "@use-gesture/react";
 import { Now } from "../../store/Now";
 import { useAutoEvent } from "../../utils/use-auto-event";
 // import { createPortal } from "react-dom";
-export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
+export function WalkerFollowerControls({
+  floor,
+  overallSpeed = 1,
+  cameraHeight = 1.5,
+  loop = true,
+}) {
   let { get } = useThree();
   //
 
@@ -17,16 +22,24 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
   });
 
   let pts = nameList.map((e) => {
-    return floor.getObjectByName(e).position;
+    let obj = floor.getObjectByName(e) || new Object3D();
+    return obj.position;
   });
 
   let roll = useMemo(() => {
-    return new CatmullRomCurve3(pts, true, "catmullrom", 1.0);
+    if (pts.length === 0) {
+      return false;
+    }
+    return new CatmullRomCurve3(pts, loop, "catmullrom", 0.8);
+    return new CatmullRomCurve3(pts, loop, "catmullrom", 0.8);
   }, [pts]);
+
+  console.log(pts);
 
   let progress = useRef(0);
 
   let speed = 0.003;
+  get().gl.domElement.style.touchAction = "none";
 
   //
   useDrag(
@@ -34,7 +47,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       state.event.preventDefault();
 
       let change = state.movement[1] || 0;
-      let delta = change / 200;
+      let delta = change / 120;
 
       if (delta >= speed) {
         delta = speed;
@@ -43,7 +56,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
         delta = -speed;
       }
 
-      progress.current += delta * 0.3;
+      progress.current += delta * overallSpeed;
     },
     {
       target: get().gl.domElement,
@@ -60,15 +73,15 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       let change = state.delta[1] || 0;
       let delta = change / 100;
 
-      if (delta >= speed * 0.2) {
-        delta = speed * 0.2;
+      if (delta >= speed * 0.4) {
+        delta = speed * 0.4;
       }
 
-      if (delta <= -speed * 0.2) {
-        delta = -speed * 0.2;
+      if (delta <= -speed * 0.4) {
+        delta = -speed * 0.4;
       }
 
-      progress.current += delta;
+      progress.current += delta * overallSpeed;
     },
     {
       target: get().gl.domElement,
@@ -94,16 +107,21 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
   let back2 = new Vector3();
   let headWP = new Vector3();
   let camWD = new Vector3();
-  useFrame(({ camera, scene }) => {
-    lv = MathUtils.lerp(lv, progress.current, 0.1);
 
-    roll.getPoint(lv + 0.01, at);
+  //
+  useFrame(({ camera, scene }) => {
+    lv = MathUtils.lerp(lv, progress.current, 0.18);
+    if (!roll) {
+      return;
+    }
+    roll.getPoint(lv + 0.001, at);
     roll.getPoint(lv + -0.0, back);
-    roll.getPoint(lv + -0.01, back2);
+    roll.getPoint(lv + -0.001, back2);
 
     Now.goingTo.copy(at);
     camera.position.copy(back2);
-    camera.lookAt(back);
+    camera.position.y = 1.5;
+    camera.lookAt(back.x, 1.5, back.z);
 
     let head = scene.getObjectByName("Head");
     if (head) {
@@ -119,7 +137,7 @@ export function WalkerFollowerControls({ floor, cameraHeight = 1.5 }) {
       camera.position.sub(camWD);
 
       camera.position.y = 1.5;
-      camera.lookAt(Now.avatarAt.x, 1.5, Now.avatarAt.z);
+      camera.lookAt(at.x, 1.5, at.z);
     }
   });
 

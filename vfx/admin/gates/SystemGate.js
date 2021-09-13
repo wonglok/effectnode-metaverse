@@ -21,8 +21,10 @@ export function SystemGate({ children }) {
   }, []);
 
   //
+  //
+  //
   return (
-    <div>
+    <>
       {ok === "loading" && (
         <section className="bg-white font-family-karla h-screen">
           <div className="w-full flex flex-wrap">
@@ -94,7 +96,7 @@ export function SystemGate({ children }) {
         </section>
       )}
       {ok === "ok" && children}
-    </div>
+    </>
   );
 }
 

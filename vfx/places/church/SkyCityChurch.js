@@ -78,18 +78,17 @@ function MapContent() {
         o3d
       )}
 
-      <PlayerCollider
-        Now={Now}
-        colliderMesh={colliderManager.collider}
-      ></PlayerCollider>
-
-      <PlayerDisplay Now={Now} floor={floor}></PlayerDisplay>
+      <PlayerDisplay Now={Now} floor={floor}>
+        <PlayerCollider
+          Now={Now}
+          colliderMesh={colliderManager.collider}
+        ></PlayerCollider>
+      </PlayerDisplay>
 
       <SkyViewControls
         colliderMesh={colliderManager.collider}
         Now={Now}
       ></SkyViewControls>
-
       <Portals envMap={envMap} floor={floor}></Portals>
     </group>
   );

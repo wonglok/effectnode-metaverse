@@ -11,6 +11,7 @@ export function PlayerDisplay({
   envMap,
   isSwim = false,
   lookBack = false,
+  children = null,
 }) {
   let [show, setShow] = useState(false);
   let [url, setURL] = useState(false);
@@ -24,13 +25,16 @@ export function PlayerDisplay({
     <group position={[0, -2.315, 0]}>
       <Suspense fallback={null}>
         {show && (
-          <PlayerInternal
-            lookBack={lookBack}
-            envMap={envMap}
-            url={url}
-            Now={Now}
-            isSwim={isSwim}
-          ></PlayerInternal>
+          <group>
+            <PlayerInternal
+              lookBack={lookBack}
+              envMap={envMap}
+              url={url}
+              Now={Now}
+              isSwim={isSwim}
+            ></PlayerInternal>
+            {children}
+          </group>
         )}
       </Suspense>
     </group>
@@ -188,7 +192,7 @@ function Pose({ avatar, Now, isSwim = false, lookBack = false }) {
 
       current.reset();
       current.play();
-      current.fadeIn(0.15);
+      current.fadeIn(0.2);
     });
   }, [avatar]);
 

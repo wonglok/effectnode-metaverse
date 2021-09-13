@@ -24,7 +24,7 @@ export default function PlacePage({ placeID }) {
 }
 
 function PageRouter({ placeID }) {
-  let MyPage = <div></div>;
+  let MyPage = () => <div></div>;
 
   if (Pages[placeID]) {
     MyPage = Pages[placeID];
@@ -34,6 +34,12 @@ function PageRouter({ placeID }) {
 }
 
 let Pages = {
+  journey: dynamic(() => import("../../vfx/places/journey/Journey")),
   spaceship: dynamic(() => import("../../vfx/places/spaceship/SpaceStation")),
+  sing: dynamic(() => import("../../vfx/places/sing/Sing")),
   church: dynamic(() => import("../../vfx/places/church/SkyCityChurch")),
 };
+
+//
+
+//
