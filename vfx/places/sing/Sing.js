@@ -109,7 +109,7 @@ function MapContent() {
     let arr = [];
 
     if (roll) {
-      let pts = roll.getPoints(500);
+      let pts = roll.getPoints(600);
 
       pts.forEach((e) => {
         let normal = new Vector3(
