@@ -22,7 +22,7 @@ export function PathWay({ floor, loop = true }) {
     if (pts.length === 0) {
       return false;
     }
-    return new CatmullRomCurve3(pts, loop, "catmullrom", 0.5);
+    return new CatmullRomCurve3(pts, loop, "catmullrom", 0.8);
   }, [pts, loop]);
 
   const lineMat = useMemo(() => {

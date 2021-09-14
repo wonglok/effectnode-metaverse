@@ -4,14 +4,21 @@ import { Suspense, useEffect, useMemo } from "react";
 import { Preload } from "../../canvas/Preload/Preload";
 import { Starter } from "../../canvas/Starter/Starter";
 import { Assets, AQ } from "./Assets";
-import { CatmullRomCurve3, Color, Object3D, Vector3 } from "three";
+import {
+  CatmullRomCurve3,
+  Color,
+  Object3D,
+  Vector3,
+  sRGBEncoding,
+  CubeTextureLoader,
+} from "three";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { ColliderManager } from "../../classes/ColliderManager";
 import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
 import { Now } from "../../store/Now";
 import { SkyViewControls } from "../../canvas/Controls/SkyViewControls";
 import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
-import { ShaderBloomer } from "../../canvas/PostProcessing/ShaderBloomer";
+import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
 import { FlyTeleport } from "../../game/Portals/FlyTeleport";
@@ -19,6 +26,7 @@ import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerCont
 import { PathWay } from "../../canvas/MapAddons/PathWay";
 import { SongFlyControls } from "../../canvas/Controls/SongFlyControls";
 import { Butterflyer } from "./Butterflyer.js";
+// import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 
 export default function Sing() {
   return (
@@ -27,8 +35,8 @@ export default function Sing() {
         <BG></BG>
         <Preload Assets={Assets}>
           <MapLoader></MapLoader>
-          <ShaderBloomer></ShaderBloomer>
-          <StarSky></StarSky>
+          <SimpleBloomer></SimpleBloomer>
+          {/* <StarSky></StarSky> */}
         </Preload>
       </Starter>
     </div>
@@ -40,7 +48,10 @@ function BG() {
   useEffect(() => {
     let orig = get().scene.background;
 
-    get().scene.background = new Color("#333");
+    get().scene.background = new CubeTextureLoader()
+      .setPath("/cubemap/sky-grass/")
+      .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
+    get().scene.background.encoding = sRGBEncoding;
 
     return () => {
       get().scene.background = orig;
@@ -102,7 +113,7 @@ function MapContent() {
     if (pts.length === 0) {
       return false;
     }
-    return new CatmullRomCurve3(pts, true, "catmullrom", 0.5);
+    return new CatmullRomCurve3(pts, true, "catmullrom", 0.8);
   }, [floor]);
 
   let f0Action = useMemo(() => {

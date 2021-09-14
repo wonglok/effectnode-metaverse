@@ -1,7 +1,14 @@
 import { useGLTF } from "@react-three/drei";
 import { createPortal, useFrame } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
-import { AnimationMixer, Euler, MathUtils, Object3D, Vector3 } from "three";
+import {
+  AnimationMixer,
+  Color,
+  Euler,
+  MathUtils,
+  Object3D,
+  Vector3,
+} from "three";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { AQ } from "./Assets";
 
@@ -13,6 +20,22 @@ export function Butterflyer({ speed = 0, to, from }) {
   let butterfly = useMemo(() => {
     return SkeletonUtils.clone(gltf.scene);
   }, [gltf]);
+
+  useMemo(() => {
+    butterfly.traverse((it) => {
+      it.userData.enableBloom = true;
+      if (it.material) {
+        it.material = it.material.clone();
+        it.material.metalness = 1.0;
+        it.material.roughness = 0.5;
+        if (Math.random() <= 0.5) {
+          it.material.color = new Color("yellow").offsetHSL(0, -0.3, 0.2);
+        } else {
+          it.material.color = new Color("pink").offsetHSL(0, -0.3, -0.2);
+        }
+      }
+    });
+  }, [butterfly]);
 
   let mixer = useMemo(() => {
     return new AnimationMixer(butterfly);

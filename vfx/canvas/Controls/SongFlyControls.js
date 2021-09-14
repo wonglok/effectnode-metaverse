@@ -229,7 +229,7 @@ export function SongFlyControls({
     if (pts.length === 0) {
       return false;
     }
-    return new CatmullRomCurve3(pts, loop, "catmullrom", 0.8);
+    return new CatmullRomCurve3(pts, loop, "catmullrom", 1);
   }, [pts, loop]);
 
   console.log(pts);
