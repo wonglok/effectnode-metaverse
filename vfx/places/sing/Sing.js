@@ -117,13 +117,13 @@ function MapContent() {
           Math.random(),
           Math.random()
           //
-        ).multiplyScalar((Math.random() * 2.0 - 1.0) * 50.0);
+        ).multiplyScalar((Math.random() * 2.0 - 1.0) * 10.0);
 
         e.add(normal);
 
         let o3d = new Object3D();
         o3d.position.copy(e);
-        // o3d.position.y -= 10;
+        o3d.position.y -= 5;
         arr.push(o3d);
       });
     }
