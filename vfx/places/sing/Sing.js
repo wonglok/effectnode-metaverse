@@ -170,9 +170,9 @@ function MapContent() {
         to.rotation.y = Math.random() * 0.3;
         to.rotation.z = Math.random() * 2.0 - 1.0;
 
-        to.position.x += to.rotation.x * 50;
-        to.position.y += to.rotation.y * 50;
-        to.position.z += to.rotation.z * 50;
+        to.position.x += to.rotation.x * 100;
+        to.position.y += to.rotation.y * 100;
+        to.position.z += to.rotation.z * 100;
         return (
           <group
             key={"____" + e.uuid}

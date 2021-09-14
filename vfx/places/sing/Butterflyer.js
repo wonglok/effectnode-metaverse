@@ -24,7 +24,7 @@ export function Butterflyer({ speed = 0, to, from }) {
     let far = from.position.distanceTo(st.camera.position);
     if (far < 70) {
       mixer.update(dt + speed / 50);
-      o3d.position.lerp(to.position, 0.03);
+      o3d.position.lerp(to.position, 0.003);
 
       o3d.lookAt(to.position);
       o3d.rotation.y += Math.PI;
@@ -36,6 +36,12 @@ export function Butterflyer({ speed = 0, to, from }) {
       o3d.scale.x = MathUtils.lerp(o3d.scale.x, 0, 0.1);
       o3d.scale.y = MathUtils.lerp(o3d.scale.y, 0, 0.1);
       o3d.scale.z = MathUtils.lerp(o3d.scale.z, 0, 0.1);
+    }
+
+    if (o3d.scale.x <= 0.1) {
+      o3d.visible = false;
+    } else {
+      o3d.visible = true;
     }
   });
 
