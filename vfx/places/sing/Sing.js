@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo } from "react";
 import { Preload } from "../../canvas/Preload/Preload";
 import { Starter } from "../../canvas/Starter/Starter";
 import { Assets, AQ } from "./Assets";
-import { Color, Object3D } from "three";
+import { CatmullRomCurve3, Color, Object3D, Vector3 } from "three";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { ColliderManager } from "../../classes/ColliderManager";
 import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
@@ -86,21 +86,50 @@ function MapContent() {
 
   // console.log();
 
-  let butterflies = [];
-  floor.traverse((it) => {
-    if (it.name.indexOf("butterfly") === 0) {
-      butterflies.push(it.name);
-    }
-  });
+  let roll = useMemo(() => {
+    let nameList = [];
+    floor.traverse((it) => {
+      if (it.name.indexOf("walk") === 0) {
+        nameList.push(it.name);
+      }
+    });
 
-  let f0Action = [];
-  floor.traverse((it) => {
-    if (it.name.indexOf("f0butterfly") === 0) {
-      f0Action.push(it);
-      it.scale.set(1, 1, 1);
-      it.rotation.set(0, 0, 0);
+    let pts = nameList.map((e) => {
+      let obj = floor.getObjectByName(e) || new Object3D();
+      return obj.position;
+    });
+
+    if (pts.length === 0) {
+      return false;
     }
-  });
+    return new CatmullRomCurve3(pts, true, "catmullrom", 0.5);
+  }, [floor]);
+
+  let f0Action = useMemo(() => {
+    let arr = [];
+
+    if (roll) {
+      let pts = roll.getPoints(500);
+
+      pts.forEach((e) => {
+        let normal = new Vector3(
+          Math.random(),
+          Math.random(),
+          Math.random()
+          //
+        ).multiplyScalar((Math.random() * 2.0 - 1.0) * 50.0);
+
+        e.add(normal);
+
+        let o3d = new Object3D();
+        o3d.position.copy(e);
+        // o3d.position.y -= 10;
+        arr.push(o3d);
+      });
+    }
+
+    return arr;
+  }, [roll]);
 
   return (
     <group>
@@ -135,49 +164,29 @@ function MapContent() {
         <PathWay loop={true} floor={floor}></PathWay>
       </group>
 
-      <Suspense fallback={null}>
-        {butterflies.map((e) => {
-          return (
-            <group
-              key={e}
-              // rotation={floor.getObjectByName(e).rotation.toArray()}
-              // position={floor.getObjectByName(e).position.toArray()}
-            >
-              {createPortal(
-                <Butterflyer speed={Math.random()}></Butterflyer>,
-                floor.getObjectByName(e)
-              )}
-            </group>
-          );
-        })}
+      {f0Action.map((e, i) => {
+        let to = f0Action[i].clone();
+        to.rotation.x = Math.random() * 2.0 - 1.0;
+        to.rotation.y = Math.random() * 0.3;
+        to.rotation.z = Math.random() * 2.0 - 1.0;
 
-        {f0Action.map((e, i) => {
-          let to = f0Action[i].clone();
-          to.rotation.x = Math.random() * 2.0 - 1.0;
-          to.rotation.y = Math.random() * 1;
-          to.rotation.z = Math.random() * 2.0 - 1.0;
-
-          to.position.x += to.rotation.x * 100;
-          to.position.y += to.rotation.y * 100;
-          to.position.z += to.rotation.z * 100;
-          return (
-            <group
-              key={e.uuid}
-              // rotation={floor.getObjectByName(e).rotation.toArray()}
-              // position={floor.getObjectByName(e).position.toArray()}
-            >
-              {createPortal(
-                <Butterflyer
-                  from={f0Action[i]}
-                  to={to}
-                  speed={Math.random()}
-                ></Butterflyer>,
-                floor.getObjectByName(e.name)
-              )}
-            </group>
-          );
-        })}
-      </Suspense>
+        to.position.x += to.rotation.x * 50;
+        to.position.y += to.rotation.y * 50;
+        to.position.z += to.rotation.z * 50;
+        return (
+          <group
+            key={"____" + e.uuid}
+            // rotation={floor.getObjectByName(e).rotation.toArray()}
+            // position={floor.getObjectByName(e).position.toArray()}
+          >
+            <Butterflyer
+              from={f0Action[i]}
+              to={to}
+              speed={Math.random()}
+            ></Butterflyer>
+          </group>
+        );
+      })}
 
       {/*  */}
     </group>
