@@ -35,14 +35,14 @@ function PageRouter({ placeID }) {
 
 let Pages = {
   journey: dynamic(() => import("../../vfx/places/journey/Journey"), {
-    ssr: true,
+    ssr: false,
   }),
   spaceship: dynamic(() => import("../../vfx/places/spaceship/SpaceStation"), {
-    ssr: true,
+    ssr: false,
   }),
-  sing: dynamic(() => import("../../vfx/places/sing/Sing"), { ssr: true }),
+  sing: dynamic(() => import("../../vfx/places/sing/Sing"), { ssr: false }),
   church: dynamic(() => import("../../vfx/places/church/SkyCityChurch"), {
-    ssr: true,
+    ssr: false,
   }),
 };
 

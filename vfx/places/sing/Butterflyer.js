@@ -24,10 +24,6 @@ export function Butterflyer({ speed = 0, to, from }) {
     to.getWorldPosition(toPos);
   });
 
-  let r0y = Math.random() * 2.0 - 1.0;
-  let r0z = Math.random() * 2.0 - 1.0;
-  let r1y = Math.random() * 2.0 - 1.0;
-  let r1z = Math.random() * 2.0 - 1.0;
   useFrame((st, dt) => {
     let far = fromPos.distanceTo(st.camera.position);
     if (far < 70) {
@@ -35,12 +31,14 @@ export function Butterflyer({ speed = 0, to, from }) {
       o3d.position.lerp(toPos, 0.006);
       o3d.lookAt(to.position);
       o3d.rotation.y += Math.PI;
+      o3d.visible = true;
     } else if (far < 150) {
       mixer.update(dt + speed / 50);
 
       o3d.position.lerp(fromPos, 0.1);
+      o3d.visible = true;
     } else {
-      o3d.position.lerp(fromPos, 0.1);
+      o3d.visible = false;
     }
   });
 
