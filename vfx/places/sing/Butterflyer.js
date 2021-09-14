@@ -33,6 +33,7 @@ export function Butterflyer({ speed = 0, to, from }) {
       o3d.scale.y = MathUtils.lerp(o3d.scale.y, 1, 0.1);
       o3d.scale.z = MathUtils.lerp(o3d.scale.z, 1, 0.1);
     } else {
+      o3d.position.lerp(from.position, 0.1);
       o3d.scale.x = MathUtils.lerp(o3d.scale.x, 0, 0.1);
       o3d.scale.y = MathUtils.lerp(o3d.scale.y, 0, 0.1);
       o3d.scale.z = MathUtils.lerp(o3d.scale.z, 0, 0.1);

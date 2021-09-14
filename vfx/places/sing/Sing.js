@@ -123,7 +123,7 @@ function MapContent() {
 
         let o3d = new Object3D();
         o3d.position.copy(e);
-        o3d.position.y -= 5;
+        o3d.position.y -= 10;
         arr.push(o3d);
       });
     }
