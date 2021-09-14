@@ -1,40 +1,38 @@
-import { useGLTF } from "@react-three/drei";
+import { useCubeTexture, useGLTF } from "@react-three/drei";
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Preload } from "../../canvas/Preload/Preload";
 import { Starter } from "../../canvas/Starter/Starter";
 import { Assets, AQ } from "./Assets";
-import {
-  CatmullRomCurve3,
-  Color,
-  Object3D,
-  Vector3,
-  sRGBEncoding,
-  CubeTextureLoader,
-} from "three";
+import { CatmullRomCurve3, Object3D, Vector3, sRGBEncoding } from "three";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { ColliderManager } from "../../classes/ColliderManager";
-import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
 import { Now } from "../../store/Now";
-import { SkyViewControls } from "../../canvas/Controls/SkyViewControls";
-import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
 import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
-import { StarSky } from "../../canvas/StarSky/StarSky";
-import { useEnvLight } from "../../utils/use-env-light";
-import { FlyTeleport } from "../../game/Portals/FlyTeleport";
-import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
 import { PathWay } from "../../canvas/MapAddons/PathWay";
 import { SongFlyControls } from "../../canvas/Controls/SongFlyControls";
 import { Butterflyer } from "./Butterflyer.js";
+import { useEnvLight } from "../../utils/use-env-light";
+
+// import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
+// import { SkyViewControls } from "../../canvas/Controls/SkyViewControls";
+// import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
+// import { StarSky } from "../../canvas/StarSky/StarSky";
+// import { useEnvLight } from "../../utils/use-env-light";
+// import { FlyTeleport } from "../../game/Portals/FlyTeleport";
+// import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
+
 // import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 
 export default function Sing() {
   return (
     <div className="h-full w-full">
       <Starter reducedMaxDPI={1.5}>
-        <BG></BG>
         <Preload Assets={Assets}>
-          <MapLoader></MapLoader>
+          <Suspense fallback={null}>
+            <MapLoader></MapLoader>
+            <BG></BG>
+          </Suspense>
           <SimpleBloomer></SimpleBloomer>
           {/* <StarSky></StarSky> */}
         </Preload>
@@ -43,21 +41,24 @@ export default function Sing() {
   );
 }
 
-function BG() {
+function BG({ children }) {
   let { get } = useThree();
+
+  const envMap = useCubeTexture(
+    ["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"],
+    { path: "/cubemap/sky-grass/" }
+  );
+
   useEffect(() => {
     let orig = get().scene.background;
-
-    get().scene.background = new CubeTextureLoader()
-      .setPath("/cubemap/sky-grass/")
-      .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
-    get().scene.background.encoding = sRGBEncoding;
+    envMap.encoding = sRGBEncoding;
+    get().scene.background = envMap;
 
     return () => {
       get().scene.background = orig;
     };
-  });
-  return null;
+  }, []);
+  return <group>{children}</group>;
 }
 
 function MapLoader() {
