@@ -24,7 +24,7 @@ export function Butterflyer({ speed = 0, to, from }) {
     let far = from.position.distanceTo(st.camera.position);
     if (far < 70) {
       mixer.update(dt + speed / 50);
-      o3d.position.lerp(to.position, 0.003);
+      o3d.position.lerp(to.position, 0.005);
 
       o3d.lookAt(to.position);
       o3d.rotation.y += Math.PI;
