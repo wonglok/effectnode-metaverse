@@ -12,6 +12,8 @@ import {
 import { useDrag, useWheel } from "@use-gesture/react";
 // import { Now } from "../../store/Now";
 import { useAutoEvent } from "../../utils/use-auto-event";
+import { DeviceOrientationControls } from "three/examples/jsm/controls/DeviceOrientationControls";
+import { useMiniEngine } from "../../utils/use-mini-engine";
 // import { createPortal } from "react-dom";
 export function SongFlyControls({
   floor,
@@ -19,10 +21,16 @@ export function SongFlyControls({
   cameraHeight = 1.5,
   loop = true,
 }) {
-  let { get } = useThree();
+  let { mini } = useMiniEngine();
+  let { get, camera } = useThree();
   //
+  let fcamera = useMemo(() => {
+    let cam = camera.clone();
+    return cam;
+  }, [camera]);
 
   let progressSong = useRef(0);
+
   useEffect(() => {
     let { camera, gl } = get();
     const listener = new AudioListener();
@@ -30,7 +38,6 @@ export function SongFlyControls({
 
     //
     let ui = document.createElement("div");
-    document.body.appendChild(ui);
     ui.style.cssText = `
       position:absolute;
       top: calc(50% - 100px / 2);
@@ -43,52 +50,168 @@ export function SongFlyControls({
       display: flex;
       justify-content: center;
       align-items: center;
+      border-radius: 10px;
     `;
-    ui.innerText = "Start Worship Experience";
+    ui.innerText = "Loading...";
+    ui.id = "startgame";
+    document.body.appendChild(ui);
+
+    const audio = new Audio(listener);
+
+    const audioLoader = new AudioLoader();
+    audio.duration = 1;
+    audioLoader.load("/song/hallelujah.mp3", (buffer) => {
+      audio.duration = buffer.duration;
+      audio.setBuffer(buffer);
+      audio.setLoop(true);
+      audio.setVolume(0.5);
+      // audio.play();
+      ui.innerText = "Start Worship Experience";
+
+      ui.addEventListener("click", startWorship);
+      ui.addEventListener("touchstart", startWorship);
+    });
 
     let tt = 0;
     let cleanAudio = () => {};
     let startWorship = () => {
       // create a global audio source
-      const audio = new Audio(listener);
 
       // load a audio and set it as the Audio object's buffer
-      const audioLoader = new AudioLoader();
-      audio.duration = 1;
-      audioLoader.load("/song/hallelujah.mp3", (buffer) => {
-        audio.duration = buffer.duration;
-        audio.setBuffer(buffer);
-        audio.setLoop(true);
-        audio.setVolume(0.5);
-        audio.play();
-      });
 
       cleanAudio = () => {
         audio.pause();
       };
 
+      audio.play();
+
+      pause.style.display = "flex";
+
       var audioCurrentTime = 0;
-      tt = setInterval(() => {
+      mini.onLoop(() => {
         if (audio.isPlaying) {
           audioCurrentTime = audio.context.currentTime;
         }
-
-        console.log(audioCurrentTime / audio.duration);
-
         progressSong.current = audioCurrentTime / audio.duration;
-      }, 1 / 60);
+      });
 
       ui.remove();
     };
-    ui.addEventListener("click", startWorship);
-    ui.addEventListener("touchstart", startWorship);
+
+    //---- Pause
+
+    let pause = document.createElement("div");
+    pause.style.cssText = `
+      position:absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      width: 100px;
+      height: 100px;
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+
+    `;
+    pause.innerText = "Play / Pause";
+    document.body.appendChild(pause);
+
+    pause.style.display = "none";
+
+    let onToggle = () => {
+      if (audio.isPlaying) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+    };
+
+    //
+    pause.addEventListener("click", onToggle);
+    pause.addEventListener("touchstart", onToggle);
 
     return () => {
       cleanAudio();
       clearInterval(tt);
       ui.remove();
+      pause.remove();
     };
   }, []);
+
+  useEffect(() => {
+    //
+
+    //
+    //
+    //   let divAR = document.createElement("div");
+    //   divAR.style.cssText = `
+    //   position:absolute;
+    //   top: 10px;
+    //   right: 10px;
+    //   background: white;
+    //   width: 100px;
+    //   height: 100px;
+    //   padding: 10px;
+    //   text-align: center;
+    //   display: flex;
+    //   justify-content: center;
+    //   align-items: center;
+    //   border-radius: 10px;
+
+    // `;
+    //   divAR.id = "arDIV";
+    //   divAR.innerText = "AR";
+    //   if ("ontouchstart" in window) {
+    //     document.body.appendChild(divAR);
+    //   }
+
+    let setup = (divAR) => {
+      let handleDoc = () => {
+        let doc = new DeviceOrientationControls(fcamera);
+        doc.enabled = true;
+        mini.onLoop(() => {
+          doc.update();
+        });
+        mini.onClean(() => {
+          doc.dispose();
+        });
+        doc.addEventListener("change", () => {
+          console.log(123);
+        });
+      };
+      let onClick = () => {
+        // feature detect
+        if (typeof DeviceOrientationEvent.requestPermission === "function") {
+          DeviceOrientationEvent.requestPermission()
+            .then((permissionState) => {
+              if (permissionState === "granted") {
+                handleDoc();
+              }
+            })
+            .catch(console.error);
+        } else {
+          handleDoc();
+          // handle regular non iOS 13+ devices
+        }
+      };
+      divAR.addEventListener("click", onClick);
+      divAR.addEventListener("touchstart", onClick);
+      divAR.addEventListener("touchend", onClick);
+    };
+
+    let tt = setInterval(() => {
+      let div = document.querySelector("#startgame");
+      if (div) {
+        clearInterval(tt);
+        setup(div);
+      }
+    }, 0);
+
+    return () => {};
+  }, [fcamera]);
 
   let nameList = [];
   floor.traverse((it) => {
@@ -206,6 +329,7 @@ export function SongFlyControls({
 
     camera.position.copy(at);
     camera.lookAt(at2.x, at2.y, at2.z);
+    camera.rotation.y += fcamera.rotation.y;
   });
 
   useEffect(() => {

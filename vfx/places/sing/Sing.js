@@ -11,7 +11,7 @@ import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
 import { Now } from "../../store/Now";
 import { SkyViewControls } from "../../canvas/Controls/SkyViewControls";
 import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
-import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
+import { ShaderBloomer } from "../../canvas/PostProcessing/ShaderBloomer";
 import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
 import { FlyTeleport } from "../../game/Portals/FlyTeleport";
@@ -23,11 +23,11 @@ import { Butterflyer } from "./Butterflyer.js";
 export default function Sing() {
   return (
     <div className="h-full w-full">
-      <Starter>
+      <Starter reducedMaxDPI={1.5}>
         <BG></BG>
         <Preload Assets={Assets}>
           <MapLoader></MapLoader>
-          <SimpleBloomer></SimpleBloomer>
+          <ShaderBloomer></ShaderBloomer>
           <StarSky></StarSky>
         </Preload>
       </Starter>

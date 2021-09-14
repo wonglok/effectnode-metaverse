@@ -1,11 +1,11 @@
 import { Canvas } from "@react-three/fiber";
 import { sRGBEncoding } from "three";
 
-export function Starter({ children }) {
+export function Starter({ children, reducedMaxDPI = 3 }) {
   return (
     <Canvas
       concurrent
-      dpr={[1, 3]}
+      dpr={[1, reducedMaxDPI]}
       onCreated={(state) => {
         // state.gl.toneMapping = ReinhardToneMapping;
         state.gl.outputEncoding = sRGBEncoding;
