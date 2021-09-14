@@ -22,7 +22,7 @@ export function PlayerDisplay({
     setShow(true);
   }, []);
   return (
-    <group position={[0, -2.315, 0]}>
+    <group position={[0, -2.315 * 0.0, 0]}>
       <Suspense fallback={null}>
         {show && (
           <group>

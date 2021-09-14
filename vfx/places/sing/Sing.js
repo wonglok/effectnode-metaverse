@@ -17,7 +17,8 @@ import { useEnvLight } from "../../utils/use-env-light";
 import { FlyTeleport } from "../../game/Portals/FlyTeleport";
 import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
 import { PathWay } from "../../canvas/MapAddons/PathWay";
-import { StoryFlyControls } from "../../canvas/Controls/StoryFlyControls";
+import { SongFlyControls } from "../../canvas/Controls/SongFlyControls";
+import { Butterflyer } from "./Butterflyer.js";
 
 export default function Sing() {
   return (
@@ -83,6 +84,24 @@ function MapContent() {
 
   let o3d = new Object3D();
 
+  // console.log();
+
+  let butterflies = [];
+  floor.traverse((it) => {
+    if (it.name.indexOf("butterfly") === 0) {
+      butterflies.push(it.name);
+    }
+  });
+
+  let f0Action = [];
+  floor.traverse((it) => {
+    if (it.name.indexOf("f0butterfly") === 0) {
+      f0Action.push(it);
+      it.scale.set(1, 1, 1);
+      it.rotation.set(0, 0, 0);
+    }
+  });
+
   return (
     <group>
       <directionalLight intensity={3} position={[3, 3, 3]} />
@@ -110,11 +129,55 @@ function MapContent() {
 
       {/* <Portals envMap={envMap} floor={floor}></Portals> */}
 
-      <StoryFlyControls loop={false} floor={floor}></StoryFlyControls>
+      <SongFlyControls loop={true} floor={floor}></SongFlyControls>
 
       <group position={[0, 1, 0]}>
-        <PathWay loop={false} floor={floor}></PathWay>
+        <PathWay loop={true} floor={floor}></PathWay>
       </group>
+
+      <Suspense fallback={null}>
+        {butterflies.map((e) => {
+          return (
+            <group
+              key={e}
+              // rotation={floor.getObjectByName(e).rotation.toArray()}
+              // position={floor.getObjectByName(e).position.toArray()}
+            >
+              {createPortal(
+                <Butterflyer speed={Math.random()}></Butterflyer>,
+                floor.getObjectByName(e)
+              )}
+            </group>
+          );
+        })}
+
+        {f0Action.map((e, i) => {
+          let to = f0Action[i].clone();
+          to.rotation.x = Math.random() * 2.0 - 1.0;
+          to.rotation.y = Math.random() * 1;
+          to.rotation.z = Math.random() * 2.0 - 1.0;
+
+          to.position.x += to.rotation.x * 100;
+          to.position.y += to.rotation.y * 100;
+          to.position.z += to.rotation.z * 100;
+          return (
+            <group
+              key={e.uuid}
+              // rotation={floor.getObjectByName(e).rotation.toArray()}
+              // position={floor.getObjectByName(e).position.toArray()}
+            >
+              {createPortal(
+                <Butterflyer
+                  from={f0Action[i]}
+                  to={to}
+                  speed={Math.random()}
+                ></Butterflyer>,
+                floor.getObjectByName(e.name)
+              )}
+            </group>
+          );
+        })}
+      </Suspense>
 
       {/*  */}
     </group>

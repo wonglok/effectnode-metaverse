@@ -144,11 +144,12 @@ export class ColliderClient {
       const deltaVector = tempVector2;
       deltaVector.subVectors(newPosition, player.position);
 
+      // newPosition.y -= 2.135;
       // adjust the player model
       player.position.copy(newPosition);
 
-      //
       Now.avatarAt.copy(player.position);
+      Now.avatarAt.y -= 2.315;
 
       // Now.avatarAt.y += 0.1;
 

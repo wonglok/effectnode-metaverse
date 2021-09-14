@@ -1,20 +1,21 @@
 import { useGLTF } from "@react-three/drei";
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { Preload } from "../../canvas/Preload/Preload";
 import { Starter } from "../../canvas/Starter/Starter";
 import { Assets, AQ } from "./Assets";
-import { Object3D } from "three";
+import { Color, Object3D } from "three";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { ColliderManager } from "../../classes/ColliderManager";
 import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
 import { Now } from "../../store/Now";
 import { SkyViewControls } from "../../canvas/Controls/SkyViewControls";
 import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
-import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
+// import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
 import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
 import { FlyTeleport } from "../../game/Portals/FlyTeleport";
+import { ShaderBloomer } from "../../canvas/PostProcessing/ShaderBloomer";
 
 export default function SkyCityChurch() {
   return (
@@ -22,12 +23,28 @@ export default function SkyCityChurch() {
       <Starter>
         <Preload Assets={Assets}>
           <MapLoader></MapLoader>
-          <SimpleBloomer></SimpleBloomer>
+          <ShaderBloomer></ShaderBloomer>
+          {/* <SimpleBloomer></SimpleBloomer> */}
           <StarSky></StarSky>
+          <BG></BG>
         </Preload>
       </Starter>
     </div>
   );
+}
+
+function BG() {
+  let { get } = useThree();
+  useEffect(() => {
+    let orig = get().scene.background;
+
+    get().scene.background = new Color("#000");
+
+    return () => {
+      get().scene.background = orig;
+    };
+  });
+  return null;
 }
 
 function MapLoader() {
@@ -54,7 +71,8 @@ function MapContent() {
       startAt.getWorldPosition(Now.startAt);
       startAt.getWorldPosition(Now.avatarAt);
       startAt.getWorldPosition(Now.goingTo);
-      Now.goingTo.y += 1.3;
+      Now.goingTo.x += 1.3;
+      Now.startAt.y += 1.3;
     }
     return floor;
   }, [gltf]);

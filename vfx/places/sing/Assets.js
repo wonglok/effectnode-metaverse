@@ -8,6 +8,13 @@ export const AQ = {
     cacheURL: false,
     preload: false,
   },
+  butterfly: {
+    slug: "butterfly",
+    type: "glb",
+    rawurl: "/objects/butterfly/butterfly.glb",
+    cacheURL: false,
+    preload: false,
+  },
   ...CommonAssets,
 };
 
