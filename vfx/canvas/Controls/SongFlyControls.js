@@ -92,7 +92,7 @@ export function SongFlyControls({
         if (audio.isPlaying) {
           audioCurrentTime = audio.context.currentTime;
         }
-        progressSong.current = audioCurrentTime / audio.duration;
+        progressSong.current = (audioCurrentTime / audio.duration) * 3.0;
       });
 
       ui.remove();
