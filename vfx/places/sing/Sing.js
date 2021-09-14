@@ -28,7 +28,7 @@ export default function Sing() {
         <Preload Assets={Assets}>
           <MapLoader></MapLoader>
           <SimpleBloomer></SimpleBloomer>
-          {/* <StarSky></StarSky> */}
+          <StarSky></StarSky>
         </Preload>
       </Starter>
     </div>
