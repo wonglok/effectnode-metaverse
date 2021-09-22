@@ -22,11 +22,11 @@ Open Source Custom Graphics Pipeline with Custom Shaders in web computer graphic
 Effect Node has evolved throughout the years to improve the developer experience on building custom visual effects.
 
 
-2014 Particle Simulation Animation with Raw WebGL APIs
-2017 Shader Node (before effect node) - won $300K HKD Grant
-2019 Effect Node - Webbys Nomination
-2019 Effect Node - Webbys Judgeship
-2021 Effect Node Cloud - Webbys Honoree
+- 2014 Particle Simulation Animation with Raw WebGL APIs
+- 2017 Shader Node (before effect node) - won $300K HKD Grant
+- 2019 Effect Node - Webbys Nomination
+- 2019 Effect Node - Webbys Judgeship
+- 2021 Effect Node Cloud - Webbys Honoree
 
 The sole inventor of Effect Node, Lok Lok, wants to share many of his expertise in webgl engineering, through this open source boilerplate 
 
