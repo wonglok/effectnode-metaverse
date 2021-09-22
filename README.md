@@ -1,1 +1,1 @@
-# EffectNode Cards
+# EffectNode Metaverse OpenSource
