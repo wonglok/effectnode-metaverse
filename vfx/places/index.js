@@ -40,6 +40,7 @@ export let getDiscoveryData = () => {
     let url = `${SiteBaseURL}${obj.slug}`;
     return {
       ...obj,
+      site: SiteBaseURL,
       id: md5(url),
       url,
     };
