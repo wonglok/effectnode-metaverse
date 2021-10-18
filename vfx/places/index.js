@@ -29,8 +29,6 @@ const Maps = Object.keys(Pages).map((kn, i) => {
 
 let getDiscoveryData = () => {
   let data = {
-    baseURL,
-    linkIDHashDescription: "md5(src + target)",
     nodes: [
       ...Maps,
       //
@@ -50,6 +48,7 @@ let getDiscoveryData = () => {
         target: Maps[0].id,
       },
     ],
+    human: "link id is made of md5(source + target)",
   };
 
   data.links = data.links.map((link) => {
