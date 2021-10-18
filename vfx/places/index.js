@@ -1,4 +1,6 @@
 import dynamic from "next/dynamic";
+import { getID } from "../utils/get-id";
+import md5 from "md5";
 
 export const baseURL = "https://metaverse.effectnode.com";
 
@@ -13,71 +15,51 @@ export let Pages = {
 };
 
 const Maps = Object.keys(Pages).map((kn, i) => {
+  let url = `${baseURL}/place/${kn}`;
   return {
-    id: `${baseURL}/${kn}?index=${encodeURIComponent(i)}`,
+    id: url,
+    plageKey: "place",
     placeID: kn,
-    url: `${baseURL}/place/${kn}`,
-    baseurl: `/place/${kn}`,
+    title: kn,
+    baseURL,
+    url,
+    page: `/place/${kn}`,
   };
 });
 
-export let Discovery = {
-  baseURL,
-  nodes: [
-    ...Maps,
-    //
-    //
-    //
-  ],
+let getDiscoveryData = () => {
+  let data = {
+    baseURL,
+    linkIDHashDescription: "md5(src + target)",
+    nodes: [
+      ...Maps,
+      //
+      //
+      //
+    ],
 
-  links: [
-    {
-      id: "starlink0001",
-      type: "same-site", // same-map, same-site, external-site
-      from: {
-        title: "Church",
-        url: `${baseURL}/place/${"church"}`,
-        map: "church",
-        coord: { x: 0, y: 0, z: 0 },
+    links: [
+      {
+        id: "",
+        source: Maps[0].id,
+        target: Maps[1].id,
       },
-      to: {
-        title: "Spaceship",
-        url: `${baseURL}/place/${"spaceship"}`,
-        map: "spaceship",
-        coord: { x: 0, y: 0, z: 0 },
+      {
+        id: "",
+        source: Maps[1].id,
+        target: Maps[0].id,
       },
-    },
-    {
-      id: "starlink0002",
-      type: "same-site", // same-map, same-site, external-site
-      from: {
-        title: "Church East End",
-        url: `${baseURL}/place/${"church"}`,
-        map: "church",
-        coord: { x: -1, y: 0, z: 0 },
-      },
-      to: {
-        title: "Church West End",
-        url: `${baseURL}/place/${"church"}`,
-        map: "church",
-        coord: { x: 1, y: 0, z: 0 },
-      },
-    },
-    {
-      id: "starlink0003",
-      type: "external-site", // same-map, same-site, external-site
-      from: {
-        title: "Spaceship",
-        url: `${baseURL}/place/${"spaceship"}`,
-        map: "spaceship",
-        coord: { x: 0, y: 0, z: 0 },
-      },
-      to: {
-        title: "Thank you Church",
-        url: `${`https://metaverse.thanyou.church`}/place/${"church"}`,
-        map: "church",
-        coord: { x: 0, y: 0, z: 0 },
-      },
-    },
-  ],
+    ],
+  };
+
+  data.links = data.links.map((link) => {
+    return {
+      ...link,
+      id: md5(`${link.source}${link.target}`),
+    };
+  });
+
+  //
+  return data;
 };
+export let Discovery = getDiscoveryData();

@@ -27,6 +27,7 @@
     "firebaseui": "^4.8.1",
     "fontfaceobserver": "^2.1.0",
     "localforage": "^1.10.0",
+    "md5": "^2.3.0",
     "next": "^11.1.2",
     "nipplejs": "^0.9.0",
     "react": "17.0.1",
@@ -36,7 +37,8 @@
     "slugify": "^1.6.0",
     "three": "^0.131.1",
     "three-forcegraph": "^1.39.1",
-    "three-mesh-bvh": "^0.4.2"
+    "three-mesh-bvh": "^0.4.2",
+    "url-hash": "^1.0.2"
   },
   "license": "MIT",
   "devDependencies": {
