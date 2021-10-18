@@ -98,7 +98,7 @@ function MapContent() {
       )}
 
       {createPortal(
-        <group position={[0, 3, 0]} scale={0.01}>
+        <group position={[0, 3, 0]} scale={0.1}>
           <ForceGraphR3F></ForceGraphR3F>
         </group>,
         floor.getObjectByName("startAt")

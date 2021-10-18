@@ -26,8 +26,9 @@ export default function PlacePage({ placeID }) {
 function PageRouter({ placeID }) {
   let MyPage = () => <div>Not found</div>;
 
-  if (Pages[placeID]) {
-    MyPage = Pages[placeID];
+  let res = Pages.find((e) => e.placeID === placeID);
+  if (res) {
+    MyPage = res.compo;
   }
 
   return <MyPage placeID={placeID}></MyPage>;
