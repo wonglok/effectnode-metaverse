@@ -1,9 +1,9 @@
-import { Discovery } from "../../vfx/places";
+import { getDiscoveryData } from "../../vfx/places";
 import Cors from "cors";
 
 // Initializing the cors middleware
 const cors = Cors({
-  methods: ["GET", "HEAD"],
+  methods: ["GET", "HEAD", "OPTIONS"],
 });
 
 // Helper method to wait for a middleware to execute before continuing
@@ -25,17 +25,7 @@ async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
   // Rest of the API logic
-  res.json(Discovery);
+  res.json(getDiscoveryData());
 }
 
 export default handler;
-
-// export default async function resp(req, res) {
-//   res.status(200).json(Discovery);
-// }
-
-// //
-// //
-// //
-// //
-// //

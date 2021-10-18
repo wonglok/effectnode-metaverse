@@ -11,7 +11,7 @@ import {
   SpriteMaterial,
   TextureLoader,
 } from "three";
-import { baseURL } from "../places";
+import { BASEURL, baseURL } from "../places";
 import { useAutoEvent } from "../utils/use-auto-event";
 export function ForceGraphR3F() {
   let { get } = useThree();
@@ -24,19 +24,20 @@ export function ForceGraphR3F() {
     let cleans = [];
     let gworks = [];
 
-    // let demo = (graph) => {
-    //   const N = 300;
-    //   const gData = {
-    //     nodes: [...Array(N).keys()].map((i) => ({ id: i })),
-    //     links: [...Array(N).keys()]
-    //       .filter((id) => id)
-    //       .map((id) => ({
-    //         source: id,
-    //         target: Math.round(Math.random() * (id - 1)),
-    //       })),
-    //   };
-    //   graph.graphData(gData);
-    // };
+    let demo = (graph) => {
+      const N = 300;
+      const gData = {
+        nodes: [...Array(N).keys()].map((i) => ({ id: i })),
+        links: [...Array(N).keys()]
+          .filter((id) => id)
+          .map((id) => ({
+            source: id,
+            target: Math.round(Math.random() * (id - 1)),
+          })),
+      };
+      graph.graphData(gData);
+    };
+
     import("three-forcegraph").then(({ default: ThreeGraph }) => {
       //
       let graph = new ThreeGraph();
@@ -54,40 +55,76 @@ export function ForceGraphR3F() {
 
       /// load data
 
-      fetch(`/api/starlink`)
-        .then((e) => e.json())
-        .then((v) => {
-          graph.graphData(v);
+      let downloadTasks = [
+        //
+        fetch(`/api/starlink`).then((e) => e.json()),
+        //
+      ];
 
-          graph.linkWidth(1);
-          graph.linkCurvature(1);
-          graph.linkDirectionalParticles(1);
-          graph.linkDirectionalParticleSpeed(0.5 / 20);
-          graph.linkDirectionalParticleWidth(1);
+      //
+      Promise.all(downloadTasks).then((hoods) => {
+        let accumulatedData = {
+          nodes: [],
+          links: [],
+        };
 
-          let geo = new CircleBufferGeometry(6, 32);
-          geo.translate(0, 0, 1);
-
-          graph.nodeThreeObject((node) => {
-            let material = new MeshBasicMaterial({
-              transparent: true,
-              map: new TextureLoader().load(node.thumbnail, (t) => {
-                mesh.scale.x = t.image.width / t.image.height;
-                mesh.scale.multiplyScalar(1);
-              }),
-            });
-
-            let mesh = new Mesh(geo, material);
-            mesh.name = node.placeID;
-            mesh.userData.enableBloom = false;
-            mesh.userData.type = "metaverse-node";
-            mesh.userData.node = node;
-            gworks.push(() => {
-              mesh.lookAt(get().camera.position);
-            });
-            return mesh;
+        hoods.forEach((eHood) => {
+          eHood.nodes.forEach((s) => {
+            accumulatedData.nodes.push(s);
+          });
+          eHood.links.forEach((s) => {
+            accumulatedData.links.push(s);
           });
         });
+
+        accumulatedData.links = accumulatedData.links.filter(
+          (value, index, self) => {
+            return self.findIndex((v) => v.id === value.id) === index;
+          }
+        );
+
+        accumulatedData.nodes = accumulatedData.nodes.filter(
+          (value, index, self) => {
+            return self.findIndex((v) => v.id === value.id) === index;
+          }
+        );
+
+        graph.graphData(accumulatedData);
+
+        // stuff.filter(s => s.)
+
+        // .forEach((eachStarHood) => {});
+        // console.log(stuff);
+
+        graph.linkWidth(1);
+        graph.linkCurvature(1);
+        graph.linkDirectionalParticles(1);
+        graph.linkDirectionalParticleSpeed(0.5 / 20);
+        graph.linkDirectionalParticleWidth(1);
+
+        let geo = new CircleBufferGeometry(6, 32);
+        geo.translate(0, 0, 1);
+
+        graph.nodeThreeObject((node) => {
+          let material = new MeshBasicMaterial({
+            transparent: true,
+            map: new TextureLoader().load(node.thumbnail, (t) => {
+              mesh.scale.x = t.image.width / t.image.height;
+              mesh.scale.multiplyScalar(1);
+            }),
+          });
+
+          let mesh = new Mesh(geo, material);
+          mesh.name = node.placeID;
+          mesh.userData.enableBloom = false;
+          mesh.userData.type = "metaverse-node";
+          mesh.userData.node = node;
+          gworks.push(() => {
+            mesh.lookAt(get().camera.position);
+          });
+          return mesh;
+        });
+      });
 
       ///
       ///
@@ -137,6 +174,10 @@ export function ForceGraphR3F() {
   };
   useFrame(runrun);
 
+  let goByNode = (node) => {
+    window.location.assign(node.url);
+  };
+
   let down = (ev) => {
     move.current = 0;
     isDown.current = true;
@@ -149,10 +190,9 @@ export function ForceGraphR3F() {
       move.current <= 10
     ) {
       let node = target.current.userData?.node;
-      if (baseURL === node.baseURL) {
-        router.router.push(node.sameSiteLink);
-      } else {
-        window.location.assign(node.url);
+
+      if (node) {
+        goByNode(node);
       }
     }
 
@@ -161,17 +201,13 @@ export function ForceGraphR3F() {
   };
 
   let dom = get().gl.domElement;
-
   useAutoEvent(
     "metaverse-click-mesh",
     ({ detail }) => {
       let node = detail?.userData?.node;
 
-      console.log(node);
-      if (node && baseURL === node.baseURL) {
-        router.router.push(node.sameSiteLink);
-      } else {
-        window.location.assign(node.url);
+      if (node) {
+        goByNode(node);
       }
     },
     { passive: false },

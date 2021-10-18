@@ -126,7 +126,7 @@ export function SkyViewControls({ colliderMesh, Now }) {
     }
 
     if (hit) {
-      console.log(hit?.object);
+      // console.log(hit?.object);
       if (hit?.object?.userData?.node) {
         window.dispatchEvent(
           new CustomEvent("metaverse-click-mesh", {

@@ -4,7 +4,6 @@ import { Object3D } from "three";
 import { ForceGraphR3F } from "./ForceGraphR3F";
 import { Prototyper } from "./Prototyper";
 // import ThreeGraph from "";
-// import { Discovery } from "../vfx/places";
 
 export function Explore() {
   return (

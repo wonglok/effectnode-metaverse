@@ -1,4 +1,5 @@
-import { Pages } from "../../vfx/places";
+import { useEffect, useState } from "react";
+import { getPages } from "../../vfx/places";
 
 export async function getServerSideProps(context) {
   let placeID = context?.query?.placeID || null;
@@ -26,16 +27,15 @@ export default function PlacePage({ placeID }) {
 function PageRouter({ placeID }) {
   let MyPage = () => <div>Not found</div>;
 
-  let res = Pages.find((e) => e.placeID === placeID);
-  if (res) {
-    MyPage = res.compo;
-  }
+  let [Pager, setPager] = useState(false);
 
-  return <MyPage placeID={placeID}></MyPage>;
+  useEffect(() => {
+    let res = getPages().find((e) => e.placeID === placeID);
+    if (res) {
+      let MyPage = res.compo;
+      setPager(<MyPage placeID={placeID}></MyPage>);
+    }
+  }, []);
+
+  return Pager || <MyPage placeID={placeID}></MyPage>;
 }
-
-//
-
-//
-
-//
