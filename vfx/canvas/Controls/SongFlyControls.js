@@ -240,54 +240,54 @@ export function SongFlyControls({
 
   let speed = 0.003;
   //
-  // useDrag(
-  //   (state) => {
-  //     state.event.preventDefault();
+  useDrag(
+    (state) => {
+      state.event.preventDefault();
 
-  //     let change = state.movement[1] || 0;
-  //     let delta = change / -100;
+      let change = state.movement[1] || 0;
+      let delta = change / -100;
 
-  //     if (delta >= speed) {
-  //       delta = speed;
-  //     }
-  //     if (delta <= -speed) {
-  //       delta = -speed;
-  //     }
+      if (delta >= speed) {
+        delta = speed;
+      }
+      if (delta <= -speed) {
+        delta = -speed;
+      }
 
-  //     progress.current += delta * overallSpeed;
-  //   },
-  //   {
-  //     target: get().gl.domElement,
-  //     eventOptions: {
-  //       passive: false,
-  //     },
-  //   }
-  // );
+      progress.current += delta * overallSpeed;
+    },
+    {
+      target: get().gl.domElement,
+      eventOptions: {
+        passive: false,
+      },
+    }
+  );
 
-  // useWheel(
-  //   (state) => {
-  //     state.event.preventDefault();
+  useWheel(
+    (state) => {
+      state.event.preventDefault();
 
-  //     let change = state.delta[1] || 0;
-  //     let delta = change / -300;
+      let change = state.delta[1] || 0;
+      let delta = change / -300;
 
-  //     if (delta >= speed) {
-  //       delta = speed;
-  //     }
+      if (delta >= speed) {
+        delta = speed;
+      }
 
-  //     if (delta <= -speed) {
-  //       delta = -speed;
-  //     }
+      if (delta <= -speed) {
+        delta = -speed;
+      }
 
-  //     progress.current += delta * overallSpeed * 0.3;
-  //   },
-  //   {
-  //     target: get().gl.domElement,
-  //     eventOptions: {
-  //       passive: false,
-  //     },
-  //   }
-  // );
+      progress.current += delta * overallSpeed * 0.8;
+    },
+    {
+      target: get().gl.domElement,
+      eventOptions: {
+        passive: false,
+      },
+    }
+  );
 
   useAutoEvent("touchstart", (ev) => {
     ev.preventDefault();
@@ -306,15 +306,20 @@ export function SongFlyControls({
   //
   let lv = 0;
   useFrame(({ camera, scene }) => {
-    if (progressSong.current) {
-      progress.current = progressSong.current;
-    } else if (loop) {
-    } else {
-      progress.current = progress.current % 1;
-      progress.current = Math.abs(progress.current);
-    }
+    // if (progressSong.current) {
+    //   progress.current = progressSong.current;
+    // } else if (loop) {
+    // } else {
+    //   progress.current = progress.current % 1;
+    //   progress.current = Math.abs(progress.current);
+    // }
 
-    lv = MathUtils.lerp(lv, progress.current, 0.1);
+    progressSong.current += progress.current;
+
+    lv = MathUtils.lerp(lv, progressSong.current, 0.1);
+
+    progress.current *= 0.9;
+
     // lv = MathUtils.lerp(lv, progress.current, 0.18);
     if (!roll) {
       return;

@@ -16,6 +16,7 @@ import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
 import { FlyTeleport } from "../../game/Portals/FlyTeleport";
 import { ShaderBloomer } from "../../canvas/PostProcessing/ShaderBloomer";
+import { ForceGraphR3F } from "../../explore/ForceGraphR3F";
 
 export default function SkyCityChurch() {
   return (
@@ -38,7 +39,7 @@ function BG() {
   useEffect(() => {
     let orig = get().scene.background;
 
-    get().scene.background = new Color("#000");
+    get().scene.background = new Color("#457bcd");
 
     return () => {
       get().scene.background = orig;
@@ -94,6 +95,13 @@ function MapContent() {
           <primitive object={colliderManager.preview}></primitive>
         </group>,
         o3d
+      )}
+
+      {createPortal(
+        <group position={[0, 3, 0]} scale={0.01}>
+          <ForceGraphR3F></ForceGraphR3F>
+        </group>,
+        floor.getObjectByName("startAt")
       )}
 
       <PlayerDisplay Now={Now} floor={floor}>

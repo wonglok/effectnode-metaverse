@@ -1,6 +1,6 @@
 import { useGLTF } from "@react-three/drei";
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Preload } from "../../canvas/Preload/Preload";
 import { Starter } from "../../canvas/Starter/Starter";
 import { Assets, AQ } from "./Assets";
@@ -14,6 +14,7 @@ import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
 import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
 import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
+import { ForceGraphR3F } from "../../explore/ForceGraphR3F";
 
 export default function SpaceStation() {
   return (
@@ -64,6 +65,21 @@ function MapContent() {
 
   let o3d = new Object3D();
 
+  let metagraph = useRef();
+  useEffect(() => {
+    //
+    //
+    if (metagraph.current) {
+      floor
+        .getObjectByName("startAt")
+        .getWorldPosition(metagraph.current.position);
+      metagraph.current.position.y += 0.7;
+      metagraph.current.position.z += -5;
+      metagraph.current.scale.setScalar(0.0025);
+    }
+    //
+    //
+  }, []);
   return (
     <group>
       <directionalLight intensity={3} position={[3, 3, 3]} />
@@ -89,6 +105,10 @@ function MapContent() {
         floor={floor}
         isSwim={false}
       ></PlayerDisplay>
+
+      <group ref={metagraph}>
+        <ForceGraphR3F></ForceGraphR3F>
+      </group>
 
       {/*
       <FirstCamControls

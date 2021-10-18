@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic";
+import { Pages } from "../../vfx/places";
 
 export async function getServerSideProps(context) {
   let placeID = context?.query?.placeID || null;
@@ -32,21 +32,6 @@ function PageRouter({ placeID }) {
 
   return <MyPage placeID={placeID}></MyPage>;
 }
-
-let Pages = {
-  journey: dynamic(() => import("../../vfx/places/journey/Journey"), {
-    ssr: false,
-  }),
-  spaceship: dynamic(() => import("../../vfx/places/spaceship/SpaceStation"), {
-    ssr: false,
-  }),
-  sing: dynamic(() => import("../../vfx/places/sing/Sing"), { ssr: false }),
-  church: dynamic(() => import("../../vfx/places/church/SkyCityChurch"), {
-    ssr: false,
-  }),
-};
-
-//
 
 //
 

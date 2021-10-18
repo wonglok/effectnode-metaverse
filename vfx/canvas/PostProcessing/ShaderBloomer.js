@@ -105,6 +105,8 @@ export class BloomLayer {
         opacity: 0,
         side: DoubleSide,
       });
+
+      //
       scene.traverse((it) => {
         if (
           it.material &&
