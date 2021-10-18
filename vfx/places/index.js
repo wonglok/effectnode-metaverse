@@ -13,6 +13,7 @@ export let baseURL = BASEURL;
 export let Pages = [
   {
     placeID: "spaceship",
+    title: "Spaceship",
     thumbnail: `${baseURL}/preview/spaceship-thumb.png`,
     compo: dynamic(() => import("./spaceship/SpaceStation"), {
       ssr: false,
@@ -20,6 +21,7 @@ export let Pages = [
   },
   {
     placeID: "church",
+    title: "Thank you Church",
     thumbnail: `${baseURL}/preview/church-thumb.png`,
     compo: dynamic(() => import("./church/SkyCityChurch"), {
       ssr: false,
@@ -27,6 +29,7 @@ export let Pages = [
   },
   {
     placeID: "sing",
+    title: "Thank you Worship",
     thumbnail: `${baseURL}/preview/sing-thumb.png`,
     compo: dynamic(() => import("./sing/Sing"), {
       ssr: false,
@@ -39,9 +42,9 @@ const Maps = Pages.map((obj) => {
   let url = `${baseURL}/place/${kn}`;
   return {
     id: url,
-    plageKey: "place",
+    // plageKey: "place",
     placeID: kn,
-    title: kn,
+    title: obj.title,
     baseURL,
     url,
     thumbnail: obj.thumbnail,

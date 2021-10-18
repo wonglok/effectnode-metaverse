@@ -73,9 +73,10 @@ function MapContent() {
       floor
         .getObjectByName("startAt")
         .getWorldPosition(metagraph.current.position);
-      metagraph.current.position.y += 0.7;
+      metagraph.current.position.x += -1;
+      metagraph.current.position.y += 1.3;
       metagraph.current.position.z += -5;
-      metagraph.current.scale.setScalar(0.0025);
+      metagraph.current.scale.setScalar(0.03);
     }
     //
     //

@@ -76,7 +76,8 @@ export function ForceGraphR3F() {
 
             let mesh = new Mesh(geo, material);
             mesh.userData.enableBloom = false;
-
+            mesh.userData.type = "metaverse-node";
+            mesh.userData.node = node;
             gworks.push(() => {
               mesh.lookAt(get().camera.position);
             });
