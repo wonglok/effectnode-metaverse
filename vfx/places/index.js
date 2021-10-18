@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { getID } from "../utils/get-id";
 import md5 from "md5";
-
+import pkg from "../../package.json";
 export const baseURL = "https://metaverse.effectnode.com";
 
 export let Pages = {
@@ -30,8 +30,9 @@ const Maps = Object.keys(Pages).map((kn, i) => {
 let getDiscoveryData = () => {
   let data = {
     meta: {
-      schema: "effectnode-metaverse",
-      version: "0.0.1",
+      schema: "metaverse-starlink",
+      license: pkg.license,
+      version: pkg.version,
     },
     nodes: [
       ...Maps,
@@ -39,7 +40,6 @@ let getDiscoveryData = () => {
       //
       //
     ],
-
     links: [
       {
         id: "",
