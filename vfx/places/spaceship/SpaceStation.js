@@ -15,6 +15,9 @@ import { useEnvLight } from "../../utils/use-env-light";
 import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
 import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
 import { ForceGraphR3F } from "../../explore/ForceGraphR3F";
+import { useAutoEvent } from "../../utils/use-auto-event";
+import { baseURL } from "..";
+import router from "next/router";
 
 export default function SpaceStation() {
   return (
@@ -66,6 +69,7 @@ function MapContent() {
   let o3d = new Object3D();
 
   let metagraph = useRef();
+
   useEffect(() => {
     //
     //
@@ -81,6 +85,7 @@ function MapContent() {
     //
     //
   }, []);
+
   return (
     <group>
       <directionalLight intensity={3} position={[3, 3, 3]} />

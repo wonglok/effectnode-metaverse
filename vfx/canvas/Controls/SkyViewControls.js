@@ -108,25 +108,41 @@ export function SkyViewControls({ colliderMesh, Now }) {
 
   let castSync = () => {
     //
-    const { raycaster, mouse, camera } = get();
+    const { raycaster, mouse, camera, scene } = get();
 
     raycaster.setFromCamera(mouse, camera);
 
-    let hit = colliderMesh.geometry.boundsTree.raycastFirst(
-      colliderMesh,
-      raycaster,
-      raycaster.ray
-    );
+    // let hit = colliderMesh.geometry.boundsTree.raycastFirst(
+    //   colliderMesh,
+    //   raycaster,
+    //   raycaster.ray
+    // );
+
+    let res = raycaster.intersectObject(scene, true);
+
+    let hit = false;
+    if (res && res[0]) {
+      hit = res[0];
+    }
 
     if (hit) {
+      console.log(hit?.object);
+      if (hit?.object?.userData?.node) {
+        window.dispatchEvent(
+          new CustomEvent("metaverse-click-mesh", {
+            detail: hit?.object,
+          })
+        );
+        return;
+      }
+
       Now.goingTo.copy(hit.point);
       console.log(hit.point.toArray().map((e) => Number(e.toFixed(2))));
     }
   };
   Now.isDown = false;
-
   useAutoEvent(
-    "mousedown",
+    "pointerdown",
     () => {
       Now.isDown = true;
       castSync();
@@ -136,7 +152,7 @@ export function SkyViewControls({ colliderMesh, Now }) {
   );
 
   useAutoEvent(
-    "mouseup",
+    "pointerup",
     () => {
       Now.isDown = false;
       castSync();
@@ -145,25 +161,45 @@ export function SkyViewControls({ colliderMesh, Now }) {
     get().gl.domElement
   );
 
-  useAutoEvent(
-    "touchstart",
-    () => {
-      Now.isDown = true;
-      castSync();
-    },
-    { passive: false },
-    get().gl.domElement
-  );
+  // useAutoEvent(
+  //   "mousedown",
+  //   () => {
+  //     Now.isDown = true;
+  //     castSync();
+  //   },
+  //   { passive: false },
+  //   get().gl.domElement
+  // );
 
-  useAutoEvent(
-    "touchend",
-    () => {
-      Now.isDown = false;
-      castSync();
-    },
-    { passive: false },
-    get().gl.domElement
-  );
+  // useAutoEvent(
+  //   "mouseup",
+  //   () => {
+  //     Now.isDown = false;
+  //     castSync();
+  //   },
+  //   { passive: false },
+  //   get().gl.domElement
+  // );
+
+  // useAutoEvent(
+  //   "touchstart",
+  //   () => {
+  //     Now.isDown = true;
+  //     castSync();
+  //   },
+  //   { passive: false },
+  //   get().gl.domElement
+  // );
+
+  // useAutoEvent(
+  //   "touchend",
+  //   () => {
+  //     Now.isDown = false;
+  //     castSync();
+  //   },
+  //   { passive: false },
+  //   get().gl.domElement
+  // );
 
   useFrame(() => {
     if (Now.isDown) {

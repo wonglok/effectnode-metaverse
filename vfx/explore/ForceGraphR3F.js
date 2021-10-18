@@ -1,4 +1,5 @@
 import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
+import router from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CircleBufferGeometry,
@@ -10,6 +11,8 @@ import {
   SpriteMaterial,
   TextureLoader,
 } from "three";
+import { baseURL } from "../places";
+import { useAutoEvent } from "../utils/use-auto-event";
 export function ForceGraphR3F() {
   let { get } = useThree();
   let works = useRef({ sim() {} });
@@ -75,6 +78,7 @@ export function ForceGraphR3F() {
             });
 
             let mesh = new Mesh(geo, material);
+            mesh.name = node.placeID;
             mesh.userData.enableBloom = false;
             mesh.userData.type = "metaverse-node";
             mesh.userData.node = node;
@@ -99,6 +103,82 @@ export function ForceGraphR3F() {
   useFrame(() => {
     works.current.sim();
   });
+
+  let detect = (o3d) => {
+    if (!o3d) {
+      return false;
+    }
+    get().raycaster.setFromCamera(get().mouse, get().camera);
+    let res = get().raycaster.intersectObjects([o3d], true);
+    if (res && res[0]) {
+      return res[0];
+    } else {
+      return false;
+    }
+  };
+
+  let target = useRef(false);
+  let isDown = useRef(false);
+  let move = useRef(0);
+  let runrun = () => {
+    if (isDown.current) {
+      move.current++;
+    }
+    let res = detect(o3d);
+    let show = false;
+    if (res) {
+      target.current = res.object;
+    }
+    if (show) {
+      document.body.style.cursor = "pointer";
+    } else {
+      document.body.style.cursor = "";
+    }
+  };
+  useFrame(runrun);
+
+  let down = (ev) => {
+    move.current = 0;
+    isDown.current = true;
+  };
+  let up = (ev) => {
+    runrun();
+    if (
+      target.current &&
+      target.current?.userData?.node &&
+      move.current <= 10
+    ) {
+      let node = target.current.userData?.node;
+      if (baseURL === node.baseURL) {
+        router.router.push(node.sameSiteLink);
+      } else {
+        window.location.assign(node.url);
+      }
+    }
+
+    move.current = 0;
+    isDown.current = false;
+  };
+
+  let dom = get().gl.domElement;
+
+  useAutoEvent(
+    "metaverse-click-mesh",
+    ({ detail }) => {
+      let node = detail?.userData?.node;
+
+      console.log(node);
+      if (node && baseURL === node.baseURL) {
+        router.router.push(node.sameSiteLink);
+      } else {
+        window.location.assign(node.url);
+      }
+    },
+    { passive: false },
+    window
+  );
+  useAutoEvent("pointerdown", down, { passive: false }, dom);
+  useAutoEvent("pointerup", up, { passive: false }, dom);
 
   return (
     <group position={[0, 0, 0]} scale={1}>

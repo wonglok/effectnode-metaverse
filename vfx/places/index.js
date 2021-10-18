@@ -4,6 +4,10 @@ import pkg from "../../package.json";
 
 let BASEURL = "https://metaverse.effectnode.com";
 
+if (typeof window !== "undefined") {
+  BASEURL = window.location.origin;
+}
+
 if (process.env.NODE_ENV === "development") {
   BASEURL = "http://localhost:3000";
 }
@@ -48,7 +52,7 @@ const Maps = Pages.map((obj) => {
     baseURL,
     url,
     thumbnail: obj.thumbnail,
-    page: `/place/${kn}`,
+    sameSiteLink: `/place/${kn}`,
   };
 });
 
@@ -70,11 +74,6 @@ let getDiscoveryData = () => {
         id: "",
         source: Maps[0].id,
         target: Maps[1].id,
-      },
-      {
-        id: "",
-        source: Maps[1].id,
-        target: Maps[0].id,
       },
       {
         id: "",
