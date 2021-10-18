@@ -29,6 +29,10 @@ const Maps = Object.keys(Pages).map((kn, i) => {
 
 let getDiscoveryData = () => {
   let data = {
+    meta: {
+      schema: "effectnode-metaverse",
+      version: "0.0.1",
+    },
     nodes: [
       ...Maps,
       //
