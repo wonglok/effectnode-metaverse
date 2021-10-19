@@ -1,21 +1,19 @@
-import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
+// import router from "next/router";
 import md5 from "md5";
-import router from "next/router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   CircleBufferGeometry,
   Mesh,
   MeshBasicMaterial,
   Object3D,
-  PlaneBufferGeometry,
-  Sprite,
-  SpriteMaterial,
   TextureLoader,
   Color,
   BoxBufferGeometry,
+  sRGBEncoding,
 } from "three";
-// import { BASEURL, baseURL } from "../places";
 import { useAutoEvent } from "../utils/use-auto-event";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry";
 
 //
 
@@ -48,6 +46,57 @@ export function ForceGraphR3F() {
       //
       let graph = new ThreeGraph();
 
+      graph.linkWidth(1);
+      graph.linkCurvature(0);
+      graph.linkDirectionalParticles(1);
+      graph.linkDirectionalParticleSpeed(0.5 / 20);
+      graph.linkDirectionalParticleWidth(1);
+
+      let box = new RoundedBoxGeometry(12, 12, 2, 4, 4);
+      box.translate(0, 0, 1);
+
+      //
+      let circle = new CircleBufferGeometry(7, 32);
+      circle.translate(0, 0, 1);
+
+      graph.nodeThreeObject((node) => {
+        let material = new MeshBasicMaterial({
+          transparent: true,
+          map: new TextureLoader().load(
+            node.thumbnail,
+            (t) => {
+              t.encoding = sRGBEncoding;
+
+              if (t.image.width >= t.image.height) {
+                mesh.scale.x = t.image.width / t.image.height;
+              } else if (t.image.width <= t.image.height) {
+                mesh.scale.y = t.image.height / t.image.width;
+              } else {
+              }
+            },
+            () => {},
+            () => {
+              mesh.material.color = new Color("#ff00ff");
+            }
+          ),
+        });
+
+        let mesh = new Mesh(undefined, material);
+        if (node.type === "core") {
+          mesh.geometry = circle;
+        } else {
+          mesh.geometry = box;
+        }
+        mesh.name = node.placeID;
+        mesh.userData.enableBloom = false;
+        mesh.userData.type = "metaverse-node";
+        mesh.userData.node = node;
+        gworks.push(() => {
+          mesh.lookAt(get().camera.position);
+        });
+        return mesh;
+      });
+
       o3d.children.forEach((l) => {
         o3d.remove(l);
       });
@@ -59,127 +108,62 @@ export function ForceGraphR3F() {
         gworks.forEach((w) => w());
       };
 
-      let downloadTasks = await fetch(`/api/starlink`, { mode: "cors" })
+      fetch(`/api/starlink`, { mode: "cors" })
         .then((e) => e.json())
         .then((v) => {
-          return [
-            Promise.resolve(v),
+          onRunHoods([v]);
 
-            ...v.friends.map((f) => {
-              console.log(f);
-              //
-
+          return {
+            me: v,
+            bucket: [],
+          };
+        })
+        .then(({ me, bucket }) => {
+          if (me) {
+            me.friends.forEach((f) => {
               let urlObj = new URL(f.url);
               let origin = urlObj.origin;
               return fetch(`${f.url}?domain=${encodeURIComponent(origin)}`)
                 .then((e) => e.json())
+                .then((j) => {
+                  //
+                  bucket.push(j);
+                  onRunHoods([me, ...bucket], me.myself);
+                })
                 .catch((e) => {
                   console.log(e);
                   return false;
                 });
-            }),
-          ];
+            });
+          }
         });
 
-      //
-      Promise.all(downloadTasks).then((hoods) => {
-        hoods = hoods.filter((e) => e);
+      let onRunHoods = (hoods, me) => {
+        let others = hoods.filter((e) => e);
 
-        let me = hoods[0].myself;
+        let currentData = { nodes: [], links: [] };
 
-        let others = hoods.slice(1, hoods.length);
-
-        let accumulatedData = {
-          nodes: [],
-          links: [],
-        };
-
-        hoods.forEach((eHood) => {
+        others.forEach((eHood) => {
           eHood.nodes.forEach((s) => {
-            accumulatedData.nodes.push(s);
+            currentData.nodes.push(s);
           });
           eHood.links.forEach((s) => {
-            accumulatedData.links.push(s);
+            currentData.links.push(s);
           });
         });
 
-        others.forEach((otherPpl) => {
-          console.log(otherPpl);
-
-          accumulatedData.links.push({
-            source: me?.id,
-            target: otherPpl?.myself?.id,
-            id: md5(`${me?.id}${otherPpl?.myself?.id}`),
+        if (me) {
+          others.forEach((otherPpl) => {
+            currentData.links.push({
+              source: me?.id,
+              target: otherPpl?.myself?.id,
+              id: md5(`${me?.id}${otherPpl?.myself?.id}`),
+            });
           });
-        });
+        }
 
-        // accumulatedData.links = accumulatedData.links.filter(
-        //   (value, index, self) => {
-        //     return self.findIndex((v) => v.id === value.id) === index;
-        //   }
-        // );
-
-        // accumulatedData.nodes = accumulatedData.nodes.filter(
-        //   (value, index, self) => {
-        //     return self.findIndex((v) => v.id === value.id) === index;
-        //   }
-        // );
-
-        graph.graphData(accumulatedData);
-
-        // stuff.filter(s => s.)
-
-        // .forEach((eachStarHood) => {});
-        // console.log(stuff);
-
-        graph.linkWidth(1);
-        graph.linkCurvature(0);
-        graph.linkDirectionalParticles(1);
-        graph.linkDirectionalParticleSpeed(0.5 / 20);
-        graph.linkDirectionalParticleWidth(1);
-
-        let circle = new CircleBufferGeometry(7, 32);
-        circle.translate(0, 0, 1);
-        let plane = new BoxBufferGeometry(12, 12, 12);
-        plane.translate(0, 0, 1);
-
-        graph.nodeThreeObject((node) => {
-          let material = new MeshBasicMaterial({
-            transparent: true,
-            map: new TextureLoader().load(
-              node.thumbnail,
-              (t) => {
-                mesh.scale.x = t.image.width / t.image.height;
-                mesh.scale.multiplyScalar(1);
-              },
-              () => {},
-              () => {
-                mesh.material.color = new Color("#ff00ff");
-              }
-            ),
-          });
-
-          let mesh = new Mesh(undefined, material);
-          if (node.type === "core") {
-            mesh.geometry = circle;
-          } else {
-            mesh.geometry = plane;
-          }
-          mesh.name = node.placeID;
-          mesh.userData.enableBloom = false;
-          mesh.userData.type = "metaverse-node";
-          mesh.userData.node = node;
-          gworks.push(() => {
-            mesh.lookAt(get().camera.position);
-          });
-          return mesh;
-        });
-      });
-
-      ///
-      ///
-      ///
-      ///
+        graph.graphData(currentData);
+      };
     });
 
     return () => {
@@ -228,29 +212,6 @@ export function ForceGraphR3F() {
     window.location.assign(node.url);
   };
 
-  // let down = (ev) => {
-  //   move.current = 0;
-  //   isDown.current = true;
-  // };
-  // let up = (ev) => {
-  //   runrun();
-  //   if (
-  //     target.current &&
-  //     target.current?.userData?.node &&
-  //     move.current <= 10
-  //   ) {
-  //     let node = target.current.userData?.node;
-
-  //     if (node && node.url) {
-  //       goByNode(node);
-  //     }
-  //   }
-
-  //   move.current = 0;
-  //   isDown.current = false;
-  // };
-
-  // let dom = get().gl.domElement;
   useAutoEvent(
     "metaverse-click-mesh",
     ({ detail }) => {
@@ -263,8 +224,6 @@ export function ForceGraphR3F() {
     { passive: false },
     window
   );
-  // useAutoEvent("pointerdown", down, { passive: false }, dom);
-  // useAutoEvent("pointerup", up, { passive: false }, dom);
 
   return (
     <group position={[0, 0, 0]} scale={1}>

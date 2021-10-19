@@ -24,7 +24,7 @@ export default function SkyCityChurch() {
       <Starter>
         <Preload Assets={Assets}>
           <MapLoader></MapLoader>
-          <ShaderBloomer></ShaderBloomer>
+          {/* <ShaderBloomer></ShaderBloomer> */}
           {/* <SimpleBloomer></SimpleBloomer> */}
           <StarSky></StarSky>
           <BG></BG>
@@ -115,6 +115,10 @@ function MapContent() {
         colliderMesh={colliderManager.collider}
         Now={Now}
       ></SkyViewControls>
+
+      {/*  */}
+      {/*  */}
+
       <Portals envMap={envMap} floor={floor}></Portals>
     </group>
   );

@@ -9,12 +9,12 @@ module.exports = {
   },
   plugins: [
     //
-    require("daisyui"),
+    // require("daisyui"),
   ],
 
-  daisyui: {
-    styled: true,
-    themes: false,
-    rtl: false,
-  },
+  // daisyui: {
+  //   styled: true,
+  //   themes: false,
+  //   rtl: false,
+  // },
 };
