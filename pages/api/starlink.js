@@ -25,7 +25,11 @@ async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
   // Rest of the API logic
-  res.json(await getDiscoveryData({ origin: process.env.VERCEL_URL }));
+  let baseURL = process.env.VERCEL_URL;
+  if (baseURL.indexOf("https://") !== 0) {
+    baseURL = `https://${baseURL}`;
+  }
+  res.json(await getDiscoveryData({ origin: baseURL }));
 }
 
 export default handler;

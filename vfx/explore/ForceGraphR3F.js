@@ -1,4 +1,5 @@
 import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
+import md5 from "md5";
 import router from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -82,6 +83,11 @@ export function ForceGraphR3F() {
       //
       Promise.all(downloadTasks).then((hoods) => {
         hoods = hoods.filter((e) => e);
+
+        let me = hoods[0].myself;
+
+        let others = hoods.slice(1, hoods.length);
+
         let accumulatedData = {
           nodes: [],
           links: [],
@@ -93,6 +99,15 @@ export function ForceGraphR3F() {
           });
           eHood.links.forEach((s) => {
             accumulatedData.links.push(s);
+          });
+        });
+
+        others.forEach((otherPpl) => {
+          console.log(otherPpl);
+          accumulatedData.links.push({
+            source: me.id,
+            target: otherPpl.myself.id,
+            id: md5(`${me.id}${otherPpl.myself.id}`),
           });
         });
 

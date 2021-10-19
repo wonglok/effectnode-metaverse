@@ -56,6 +56,9 @@ export let getMyFreinds = async () => {
 };
 
 export let getDiscoveryData = async ({ origin = SiteBaseURL }) => {
+  if (!origin) {
+    origin = SiteBaseURL;
+  }
   let endpoint = `${origin}/api/starlink`;
   let yourselfID = md5(endpoint);
 
