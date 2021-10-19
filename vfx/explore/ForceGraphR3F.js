@@ -70,7 +70,10 @@ export function ForceGraphR3F() {
             ...v.friends.map((f) => {
               console.log(f);
               //
-              return fetch(f.url)
+
+              let urlObj = new URL(f.url);
+              let origin = urlObj.origin;
+              return fetch(`${f.url}?domain=${encodeURIComponent(origin)}`)
                 .then((e) => e.json())
                 .catch((e) => {
                   console.log(e);
