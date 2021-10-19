@@ -27,15 +27,10 @@ export default function PlacePage({ placeID }) {
 function PageRouter({ placeID }) {
   let MyPage = () => <div>Not found</div>;
 
-  let [Pager, setPager] = useState(false);
+  let res = getPages().find((e) => e.placeID === placeID);
+  if (res) {
+    MyPage = res.compo;
+  }
 
-  useEffect(() => {
-    let res = getPages().find((e) => e.placeID === placeID);
-    if (res) {
-      let MyPage = res.compo;
-      setPager(<MyPage placeID={placeID}></MyPage>);
-    }
-  }, []);
-
-  return Pager || <MyPage placeID={placeID}></MyPage>;
+  return <MyPage placeID={placeID}></MyPage>;
 }
