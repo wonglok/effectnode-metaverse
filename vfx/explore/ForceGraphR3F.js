@@ -86,7 +86,7 @@ export function ForceGraphR3F() {
 
         let me = hoods[0].myself;
 
-        let others = hoods.slice(1, hoods.length);
+        let others = hoods.slice(1, hoods.length - 1);
 
         let accumulatedData = {
           nodes: [],
@@ -104,11 +104,14 @@ export function ForceGraphR3F() {
 
         others.forEach((otherPpl) => {
           console.log(otherPpl);
-          accumulatedData.links.push({
-            source: me.id,
-            target: otherPpl.myself.id,
-            id: md5(`${me.id}${otherPpl.myself.id}`),
-          });
+
+          if (me?.id && otherPpl?.myself?.id) {
+            accumulatedData.links.push({
+              source: me?.id,
+              target: otherPpl?.myself?.id,
+              id: md5(`${me?.id}${otherPpl?.myself?.id}`),
+            });
+          }
         });
 
         accumulatedData.links = accumulatedData.links.filter(
