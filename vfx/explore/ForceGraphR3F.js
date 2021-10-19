@@ -61,7 +61,7 @@ export function ForceGraphR3F() {
 
       /// load data
 
-      let downloadTasks = await fetch(`/api/starlink`)
+      let downloadTasks = await fetch(`/api/starlink`, { mode: "cors" })
         .then((e) => e.json())
         .then((v) => {
           return [

@@ -170,7 +170,11 @@ function MapContent() {
 
       {/* <Portals envMap={envMap} floor={floor}></Portals> */}
 
-      <SongFlyControls loop={true} floor={floor}></SongFlyControls>
+      <SongFlyControls
+        overallSpeed={0.1}
+        loop={true}
+        floor={floor}
+      ></SongFlyControls>
 
       <group position={[0, 1, 0]}>
         <PathWay loop={true} floor={floor}></PathWay>

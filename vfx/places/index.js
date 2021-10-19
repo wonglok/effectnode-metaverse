@@ -39,10 +39,10 @@ export let getMyFreinds = async () => {
   let list = [];
 
   list.push({
-    id: md5(`https://loving.place/api/starlink`),
+    id: md5(`https://www.loving.place/api/starlink`),
     type: "starlink",
     title: `Loving Place`,
-    url: `https://loving.place/api/starlink`,
+    url: `https://www.loving.place/api/starlink`,
   });
 
   list.push({

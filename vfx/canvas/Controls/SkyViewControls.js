@@ -143,11 +143,21 @@ export function SkyViewControls({ colliderMesh, Now }) {
   //
 
   Now.isDown = false;
+  let moved = 0;
   useAutoEvent(
     "pointerdown",
     () => {
       Now.isDown = true;
       castSync({});
+      moved = 0;
+    },
+    { passive: false },
+    get().gl.domElement
+  );
+  useAutoEvent(
+    "pointermove",
+    () => {
+      moved++;
     },
     { passive: false },
     get().gl.domElement
@@ -157,7 +167,8 @@ export function SkyViewControls({ colliderMesh, Now }) {
     "pointerup",
     () => {
       Now.isDown = false;
-      castSync({ detect: true });
+      castSync({ detect: moved <= 20 });
+      moved = 0;
     },
     { passive: false },
     get().gl.domElement
