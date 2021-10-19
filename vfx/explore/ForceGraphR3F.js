@@ -59,8 +59,6 @@ export function ForceGraphR3F() {
         gworks.forEach((w) => w());
       };
 
-      /// load data
-
       let downloadTasks = await fetch(`/api/starlink`, { mode: "cors" })
         .then((e) => e.json())
         .then((v) => {
@@ -89,7 +87,7 @@ export function ForceGraphR3F() {
 
         let me = hoods[0].myself;
 
-        let others = hoods.slice(1, hoods.length - 1);
+        let others = hoods.slice(1, hoods.length);
 
         let accumulatedData = {
           nodes: [],
@@ -108,26 +106,24 @@ export function ForceGraphR3F() {
         others.forEach((otherPpl) => {
           console.log(otherPpl);
 
-          if (me?.id && otherPpl?.myself?.id) {
-            accumulatedData.links.push({
-              source: me?.id,
-              target: otherPpl?.myself?.id,
-              id: md5(`${me?.id}${otherPpl?.myself?.id}`),
-            });
-          }
+          accumulatedData.links.push({
+            source: me?.id,
+            target: otherPpl?.myself?.id,
+            id: md5(`${me?.id}${otherPpl?.myself?.id}`),
+          });
         });
 
-        accumulatedData.links = accumulatedData.links.filter(
-          (value, index, self) => {
-            return self.findIndex((v) => v.id === value.id) === index;
-          }
-        );
+        // accumulatedData.links = accumulatedData.links.filter(
+        //   (value, index, self) => {
+        //     return self.findIndex((v) => v.id === value.id) === index;
+        //   }
+        // );
 
-        accumulatedData.nodes = accumulatedData.nodes.filter(
-          (value, index, self) => {
-            return self.findIndex((v) => v.id === value.id) === index;
-          }
-        );
+        // accumulatedData.nodes = accumulatedData.nodes.filter(
+        //   (value, index, self) => {
+        //     return self.findIndex((v) => v.id === value.id) === index;
+        //   }
+        // );
 
         graph.graphData(accumulatedData);
 
@@ -232,29 +228,29 @@ export function ForceGraphR3F() {
     window.location.assign(node.url);
   };
 
-  let down = (ev) => {
-    move.current = 0;
-    isDown.current = true;
-  };
-  let up = (ev) => {
-    runrun();
-    if (
-      target.current &&
-      target.current?.userData?.node &&
-      move.current <= 10
-    ) {
-      let node = target.current.userData?.node;
+  // let down = (ev) => {
+  //   move.current = 0;
+  //   isDown.current = true;
+  // };
+  // let up = (ev) => {
+  //   runrun();
+  //   if (
+  //     target.current &&
+  //     target.current?.userData?.node &&
+  //     move.current <= 10
+  //   ) {
+  //     let node = target.current.userData?.node;
 
-      if (node && node.url) {
-        goByNode(node);
-      }
-    }
+  //     if (node && node.url) {
+  //       goByNode(node);
+  //     }
+  //   }
 
-    move.current = 0;
-    isDown.current = false;
-  };
+  //   move.current = 0;
+  //   isDown.current = false;
+  // };
 
-  let dom = get().gl.domElement;
+  // let dom = get().gl.domElement;
   useAutoEvent(
     "metaverse-click-mesh",
     ({ detail }) => {
@@ -267,8 +263,8 @@ export function ForceGraphR3F() {
     { passive: false },
     window
   );
-  useAutoEvent("pointerdown", down, { passive: false }, dom);
-  useAutoEvent("pointerup", up, { passive: false }, dom);
+  // useAutoEvent("pointerdown", down, { passive: false }, dom);
+  // useAutoEvent("pointerup", up, { passive: false }, dom);
 
   return (
     <group position={[0, 0, 0]} scale={1}>
