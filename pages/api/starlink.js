@@ -25,7 +25,7 @@ async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
   // Rest of the API logic
-  res.json(getDiscoveryData());
+  res.json(await getDiscoveryData());
 }
 
 export default handler;

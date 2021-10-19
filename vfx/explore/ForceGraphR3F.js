@@ -11,6 +11,7 @@ import {
   SpriteMaterial,
   TextureLoader,
   Color,
+  BoxBufferGeometry,
 } from "three";
 // import { BASEURL, baseURL } from "../places";
 import { useAutoEvent } from "../utils/use-auto-event";
@@ -42,7 +43,7 @@ export function ForceGraphR3F() {
     //   graph.graphData(gData);
     // };
 
-    import("three-forcegraph").then(({ default: ThreeGraph }) => {
+    import("three-forcegraph").then(async ({ default: ThreeGraph }) => {
       //
       let graph = new ThreeGraph();
 
@@ -59,14 +60,28 @@ export function ForceGraphR3F() {
 
       /// load data
 
-      let downloadTasks = [
-        //
-        fetch(`/api/starlink`).then((e) => e.json()),
-        //
-      ];
+      let downloadTasks = await fetch(`/api/starlink`)
+        .then((e) => e.json())
+        .then((v) => {
+          return [
+            Promise.resolve(v),
+
+            ...v.friends.map((f) => {
+              console.log(f);
+              //
+              return fetch(f.url)
+                .then((e) => e.json())
+                .catch((e) => {
+                  console.log(e);
+                  return false;
+                });
+            }),
+          ];
+        });
 
       //
       Promise.all(downloadTasks).then((hoods) => {
+        hoods = hoods.filter((e) => e);
         let accumulatedData = {
           nodes: [],
           links: [],
@@ -101,13 +116,15 @@ export function ForceGraphR3F() {
         // console.log(stuff);
 
         graph.linkWidth(1);
-        graph.linkCurvature(1);
+        graph.linkCurvature(0);
         graph.linkDirectionalParticles(1);
         graph.linkDirectionalParticleSpeed(0.5 / 20);
         graph.linkDirectionalParticleWidth(1);
 
-        let geo = new CircleBufferGeometry(6, 32);
-        geo.translate(0, 0, 1);
+        let circle = new CircleBufferGeometry(7, 32);
+        circle.translate(0, 0, 1);
+        let plane = new BoxBufferGeometry(12, 12, 12);
+        plane.translate(0, 0, 1);
 
         graph.nodeThreeObject((node) => {
           let material = new MeshBasicMaterial({
@@ -125,7 +142,12 @@ export function ForceGraphR3F() {
             ),
           });
 
-          let mesh = new Mesh(geo, material);
+          let mesh = new Mesh(undefined, material);
+          if (node.type === "core") {
+            mesh.geometry = circle;
+          } else {
+            mesh.geometry = plane;
+          }
           mesh.name = node.placeID;
           mesh.userData.enableBloom = false;
           mesh.userData.type = "metaverse-node";
@@ -202,7 +224,7 @@ export function ForceGraphR3F() {
     ) {
       let node = target.current.userData?.node;
 
-      if (node) {
+      if (node && node.url) {
         goByNode(node);
       }
     }
@@ -217,7 +239,7 @@ export function ForceGraphR3F() {
     ({ detail }) => {
       let node = detail?.userData?.node;
 
-      if (node) {
+      if (node && node.url) {
         goByNode(node);
       }
     },

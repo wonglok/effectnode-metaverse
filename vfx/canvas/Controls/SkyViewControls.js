@@ -9,14 +9,12 @@ export function SkyViewControls({ colliderMesh, Now }) {
 
   let orbit = useMemo(() => {
     // Now.goingTo.set(
-    //   //
     //   Now.startAt.x,
     //   Now.startAt.y,
     //   Now.startAt.z
     // );
 
     // Now.avatarAt.set(
-    //   //
     //   Now.startAt.x,
     //   Now.startAt.y,
     //   Now.startAt.z
@@ -106,7 +104,7 @@ export function SkyViewControls({ colliderMesh, Now }) {
     };
   }, [orbit]);
 
-  let castSync = () => {
+  let castSync = ({ detect = false }) => {
     //
     const { raycaster, mouse, camera, scene } = get();
 
@@ -127,7 +125,7 @@ export function SkyViewControls({ colliderMesh, Now }) {
 
     if (hit) {
       // console.log(hit?.object);
-      if (hit?.object?.userData?.node) {
+      if (detect && hit?.object?.userData?.node) {
         window.dispatchEvent(
           new CustomEvent("metaverse-click-mesh", {
             detail: hit?.object,
@@ -140,12 +138,16 @@ export function SkyViewControls({ colliderMesh, Now }) {
       console.log(hit.point.toArray().map((e) => Number(e.toFixed(2))));
     }
   };
+
+  //
+  //
+
   Now.isDown = false;
   useAutoEvent(
     "pointerdown",
     () => {
       Now.isDown = true;
-      castSync();
+      castSync({});
     },
     { passive: false },
     get().gl.domElement
@@ -155,7 +157,7 @@ export function SkyViewControls({ colliderMesh, Now }) {
     "pointerup",
     () => {
       Now.isDown = false;
-      castSync();
+      castSync({ detect: true });
     },
     { passive: false },
     get().gl.domElement
@@ -203,7 +205,7 @@ export function SkyViewControls({ colliderMesh, Now }) {
 
   useFrame(() => {
     if (Now.isDown) {
-      castSync();
+      castSync({});
     }
   });
 

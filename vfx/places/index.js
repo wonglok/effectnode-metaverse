@@ -35,8 +35,38 @@ export let getPages = () => {
   ];
 };
 
-export let getDiscoveryData = () => {
-  let yourselfID = md5(`${SiteBaseURL}`);
+export let getMyFreinds = async () => {
+  let list = [];
+
+  list.push({
+    id: md5(`https://loving.place/api/starlink`),
+    type: "starlink",
+    title: `Loving Place`,
+    url: `https://loving.place/api/starlink`,
+  });
+
+  list.push({
+    id: md5(`https://metaverse.thankyou.church/api/starlink`),
+    type: "starlink",
+    title: `Metaverse Church`,
+    url: `https://metaverse.thankyou.church/api/starlink`,
+  });
+
+  return list;
+};
+
+export let getDiscoveryData = async () => {
+  let endpoint = `${SiteBaseURL}/api/starlink`;
+  let yourselfID = md5(endpoint);
+
+  let yourCore = {
+    id: yourselfID,
+    thumbnail: `${SiteBaseURL}/me.png`,
+    endpoint,
+    type: "core",
+  };
+
+  let friends = await getMyFreinds();
 
   const MyMaps = getPages().map((obj) => {
     let url = `${SiteBaseURL}${obj.slug}`;
@@ -50,56 +80,39 @@ export let getDiscoveryData = () => {
   });
 
   let data = {
+    id: yourCore.id,
     meta: {
       schema: "metaverse-starlink",
       license: "MIT",
       version: "0.0.1",
     },
+    myself: yourCore,
     nodes: [
-      {
-        id: yourselfID,
-        thumbnail: `${SiteBaseURL}/me.png`,
-        url: `${SiteBaseURL}`,
-        title: `Yourself`,
-        type: "user",
-      },
-
       //
+      yourCore,
       ...MyMaps,
     ],
-    links: [
-      {
-        id: "",
-        source: yourselfID,
-        target: MyMaps[0].id,
-      },
-      {
-        id: "",
-        source: yourselfID,
-        target: MyMaps[1].id,
-      },
-      {
-        id: "",
-        source: yourselfID,
-        target: MyMaps[2].id,
-      },
-    ],
-    human: "link id is made of md5(source + target)",
-    starlinks: [
+    links: [],
+    notes: [
       //
-      {
-        id: md5(``),
-        url: ``,
-      },
+      "node id is made of md5(url)",
+      "link id is made of md5(source id + target id)",
     ],
+    friends,
   };
 
-  data.links = data.links.map((link) => {
+  data.links = MyMaps.map((obj) => {
+    let source = yourCore.id;
+    let target = obj.id;
+    let id = md5(`${source}${target}`);
     return {
-      ...link,
-      id: md5(`${link.source}${link.target}`),
+      id,
+      source,
+      target,
     };
   });
+
+  //
 
   //
   return data;
