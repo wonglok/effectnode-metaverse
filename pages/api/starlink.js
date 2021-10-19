@@ -25,7 +25,7 @@ async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
   // Rest of the API logic
-  let baseURL = process.env.VERCEL_URL;
+  let baseURL = process.env.VERCEL_URL || "https://metaverse.effectnode.com";
   if (baseURL.indexOf("https://") !== 0) {
     baseURL = `https://${baseURL}`;
   }
