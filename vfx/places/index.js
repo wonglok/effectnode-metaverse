@@ -55,13 +55,13 @@ export let getMyFreinds = async () => {
   return list;
 };
 
-export let getDiscoveryData = async () => {
-  let endpoint = `${SiteBaseURL}/api/starlink`;
+export let getDiscoveryData = async ({ origin = SiteBaseURL }) => {
+  let endpoint = `${origin}/api/starlink`;
   let yourselfID = md5(endpoint);
 
   let yourCore = {
     id: yourselfID,
-    thumbnail: `${SiteBaseURL}/me.png`,
+    thumbnail: `${origin}/me.png`,
     endpoint,
     type: "core",
   };
@@ -69,10 +69,10 @@ export let getDiscoveryData = async () => {
   let friends = await getMyFreinds();
 
   const MyMaps = getPages().map((obj) => {
-    let url = `${SiteBaseURL}${obj.slug}`;
+    let url = `${origin}${obj.slug}`;
     return {
       ...obj,
-      site: SiteBaseURL,
+      site: origin,
       id: md5(url),
       url,
       type: "map",
