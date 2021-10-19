@@ -11,4 +11,10 @@ module.exports = {
     //
     require("daisyui"),
   ],
+
+  daisyui: {
+    styled: true,
+    themes: false,
+    rtl: false,
+  },
 };

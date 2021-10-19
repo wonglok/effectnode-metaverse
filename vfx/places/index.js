@@ -36,6 +36,8 @@ export let getPages = () => {
 };
 
 export let getDiscoveryData = () => {
+  let yourselfID = md5(`${SiteBaseURL}`);
+
   const MyMaps = getPages().map((obj) => {
     let url = `${SiteBaseURL}${obj.slug}`;
     return {
@@ -43,6 +45,7 @@ export let getDiscoveryData = () => {
       site: SiteBaseURL,
       id: md5(url),
       url,
+      type: "map",
     };
   });
 
@@ -53,22 +56,42 @@ export let getDiscoveryData = () => {
       version: "0.0.1",
     },
     nodes: [
+      {
+        id: yourselfID,
+        thumbnail: `${SiteBaseURL}/me.png`,
+        url: `${SiteBaseURL}`,
+        title: `Yourself`,
+        type: "user",
+      },
+
       //
       ...MyMaps,
     ],
     links: [
       {
         id: "",
-        source: MyMaps[0].id,
+        source: yourselfID,
+        target: MyMaps[0].id,
+      },
+      {
+        id: "",
+        source: yourselfID,
         target: MyMaps[1].id,
       },
       {
         id: "",
-        source: MyMaps[0].id,
+        source: yourselfID,
         target: MyMaps[2].id,
       },
     ],
     human: "link id is made of md5(source + target)",
+    starlinks: [
+      //
+      {
+        id: md5(``),
+        url: ``,
+      },
+    ],
   };
 
   data.links = data.links.map((link) => {

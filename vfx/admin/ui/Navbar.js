@@ -57,7 +57,7 @@ export function NavBar() {
         </div>
       </div>
       <div className="flex-none">
-        <div className="dropdown dropdown-end">
+        {/* <div className="dropdown dropdown-end">
           <div tabIndex="0" className="btn btn-ghost rounded-btn">
             Themes
           </div>
@@ -80,7 +80,7 @@ export function NavBar() {
               );
             })}
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );

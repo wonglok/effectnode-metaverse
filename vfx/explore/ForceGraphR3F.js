@@ -10,9 +10,13 @@ import {
   Sprite,
   SpriteMaterial,
   TextureLoader,
+  Color,
 } from "three";
-import { BASEURL, baseURL } from "../places";
+// import { BASEURL, baseURL } from "../places";
 import { useAutoEvent } from "../utils/use-auto-event";
+
+//
+
 export function ForceGraphR3F() {
   let { get } = useThree();
   let works = useRef({ sim() {} });
@@ -108,10 +112,17 @@ export function ForceGraphR3F() {
         graph.nodeThreeObject((node) => {
           let material = new MeshBasicMaterial({
             transparent: true,
-            map: new TextureLoader().load(node.thumbnail, (t) => {
-              mesh.scale.x = t.image.width / t.image.height;
-              mesh.scale.multiplyScalar(1);
-            }),
+            map: new TextureLoader().load(
+              node.thumbnail,
+              (t) => {
+                mesh.scale.x = t.image.width / t.image.height;
+                mesh.scale.multiplyScalar(1);
+              },
+              () => {},
+              () => {
+                mesh.material.color = new Color("#ff00ff");
+              }
+            ),
           });
 
           let mesh = new Mesh(geo, material);

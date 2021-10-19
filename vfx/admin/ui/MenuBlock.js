@@ -10,31 +10,31 @@ function CardManagement() {
   return (
     <ul className="menu py-4 shadow-lg  bg-base-100 rounded-box">
       <li className="menu-title ">
-        <span>Card Management</span>
+        <span>System Management</span>
       </li>
 
       <li className="hover-bordered">
         <a>
           <InfoIcon />
-          Check Card Writer
+          Link 1
         </a>
       </li>
       <li className="hover-bordered ">
         <a>
           <InfoIcon />
-          Insert CSV Links
+          Link 2
         </a>
       </li>
       <li className="hover-bordered ">
         <a>
           <InfoIcon />
-          Write Links to Cards
+          Link 3
         </a>
       </li>
       <li className="hover-bordered">
         <a>
-          <InfoIcon />
-          Modify Card Purpose
+          <FolderIcon />
+          Link 4
         </a>
       </li>
     </ul>
