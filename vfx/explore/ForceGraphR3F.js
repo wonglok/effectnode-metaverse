@@ -47,12 +47,12 @@ export function ForceGraphR3F() {
       let graph = new ThreeGraph();
 
       graph.linkWidth(1);
-      graph.linkCurvature(0);
+      graph.linkCurvature(0.3);
       graph.linkDirectionalParticles(1);
       graph.linkDirectionalParticleSpeed(0.5 / 20);
       graph.linkDirectionalParticleWidth(1);
 
-      let box = new RoundedBoxGeometry(12, 12, 2, 4, 4);
+      let box = new RoundedBoxGeometry(12, 12, 2, 2, 2);
       box.translate(0, 0, 1);
 
       //
@@ -108,11 +108,12 @@ export function ForceGraphR3F() {
         gworks.forEach((w) => w());
       };
 
+      let cache = new Map();
       fetch(`/api/starlink`, { mode: "cors" })
         .then((e) => e.json())
         .then((v) => {
+          cache.set(v.id, v);
           onRunHoods([v]);
-
           return {
             me: v,
             bucket: [],
@@ -120,21 +121,26 @@ export function ForceGraphR3F() {
         })
         .then(({ me, bucket }) => {
           if (me) {
-            me.friends.forEach((f) => {
-              let urlObj = new URL(f.url);
-              let origin = urlObj.origin;
-              return fetch(`${f.url}?domain=${encodeURIComponent(origin)}`)
-                .then((e) => e.json())
-                .then((j) => {
-                  //
-                  bucket.push(j);
-                  onRunHoods([me, ...bucket], me.myself);
-                })
-                .catch((e) => {
-                  console.log(e);
-                  return false;
-                });
-            });
+            let loadFriends = (me) => {
+              me.friends.forEach((f) => {
+                let urlObj = new URL(f.url);
+                let origin = urlObj.origin;
+                return fetch(`${f.url}?domain=${encodeURIComponent(origin)}`)
+                  .then((e) => e.json())
+                  .then((j) => {
+                    //
+                    cache.set(j.id, j);
+                    bucket.push(j);
+                    onRunHoods([me, ...bucket], me.myself);
+                  })
+                  .catch((e) => {
+                    console.log(e);
+                    return false;
+                  });
+              });
+            };
+
+            loadFriends(me);
           }
         });
 
@@ -145,7 +151,9 @@ export function ForceGraphR3F() {
 
         others.forEach((eHood) => {
           eHood.nodes.forEach((s) => {
-            currentData.nodes.push(s);
+            if (!currentData.nodes.some((a) => a.id === s.id)) {
+              currentData.nodes.push(s);
+            }
           });
           eHood.links.forEach((s) => {
             currentData.links.push(s);
