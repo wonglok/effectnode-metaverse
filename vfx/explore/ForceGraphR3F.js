@@ -47,7 +47,7 @@ export function ForceGraphR3F() {
       let graph = new ThreeGraph();
 
       graph.linkWidth(1);
-      graph.linkCurvature(0.3);
+      graph.linkCurvature(0.6);
       graph.linkDirectionalParticles(1);
       graph.linkDirectionalParticleSpeed(0.5 / 20);
       graph.linkDirectionalParticleWidth(1);
@@ -106,6 +106,7 @@ export function ForceGraphR3F() {
       works.current.sim = () => {
         graph.tickFrame();
         gworks.forEach((w) => w());
+        o3d.rotation.y += 1 / 60 / 12;
       };
 
       let cache = new Map();
@@ -155,6 +156,7 @@ export function ForceGraphR3F() {
               currentData.nodes.push(s);
             }
           });
+
           eHood.links.forEach((s) => {
             currentData.links.push(s);
           });
