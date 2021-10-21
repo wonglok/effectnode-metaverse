@@ -32,6 +32,15 @@ export let getPages = () => {
         ssr: false,
       }),
     },
+    {
+      placeID: `fly`,
+      slug: `/place/fly`,
+      title: "Thank you Worship",
+      thumbnail: `${SiteBaseURL}/preview/fly-thumb.png`,
+      compo: dynamic(() => import("./fly/Fly.js"), {
+        ssr: false,
+      }),
+    },
   ];
 };
 
