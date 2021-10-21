@@ -111,7 +111,7 @@ function FlyTracker() {
   let sim = useMemo(() => {
     return new TrackO3D({
       node: mini,
-      tailLength: 32, // 512, 1024
+      tailLength: 64, // 512, 1024
       howManyTrackers: trackers.length,
     });
   }, [trackers, trackers.length]);
