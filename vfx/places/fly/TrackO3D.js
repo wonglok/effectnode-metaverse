@@ -70,20 +70,23 @@ export class LokLokWiggleSimulation {
               tracker.userData.pz = tracker.userData.pz || 0;
 
               //
-              tracker.userData.px = MathUtils.lerp(
+              tracker.userData.px = MathUtils.damp(
                 tracker.userData.px,
                 tracker.position.x,
-                lerp
+                lerp,
+                1 / 60
               );
-              tracker.userData.py = MathUtils.lerp(
+              tracker.userData.py = MathUtils.damp(
                 tracker.userData.py,
                 tracker.position.y,
-                lerp
+                lerp,
+                1 / 60
               );
-              tracker.userData.pz = MathUtils.lerp(
+              tracker.userData.pz = MathUtils.damp(
                 tracker.userData.pz,
                 tracker.position.z,
-                lerp
+                lerp,
+                1 / 60
               );
 
               handTexture.image.data[i * 3 + 0] = DataUtils.toHalfFloat(
@@ -559,6 +562,8 @@ export class LokLokWiggleDisplay {
 
         varying vec3 vViewPosition;
 
+        varying vec3 vTColor;
+
         void main (void) {
           vec3 transformed;
           vec3 objectNormal;
@@ -567,7 +572,9 @@ export class LokLokWiggleDisplay {
 
           vT = t;
 
-          vec2 volume = vec2(0.009, 0.009) * 3.0;
+          vTColor = abs(getP3OfTex(0.5, offset.w) - getP3OfTex(0.6, offset.w));
+
+          vec2 volume = vec2(0.009, 0.009) * 20.0;
           createTube(t, volume, transformed, objectNormal);
 
           vec3 transformedNormal = normalMatrix * objectNormal;
@@ -586,6 +593,8 @@ export class LokLokWiggleDisplay {
         varying vec3 vNormal;
         varying vec3 vViewPosition;
         uniform sampler2D matcap;
+        varying vec3 vTColor;
+
         void main (void) {
 
           vec3 viewDir = normalize( vViewPosition );
@@ -593,13 +602,13 @@ export class LokLokWiggleDisplay {
           vec3 y = cross( viewDir, x );
           vec2 uv = vec2( dot( x, vNormal ), dot( y, vNormal ) ) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
 
-          vec4 matcapColor = texture2D( matcap, uv );
+          // vec4 matcapColor = texture2D( matcap, uv );
 
-          gl_FragColor = vec4(matcapColor.rgb * 0.0 + vec3(1.0), (1.0 - vT));
+          gl_FragColor = vec4(vec3(vTColor), (1.0 - vT));
         }
       `,
       transparent: true,
-      blending: AdditiveBlending,
+      // blending: AdditiveBlending,
     });
 
     let line0 = new Mesh(geometry, matLine0);

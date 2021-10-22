@@ -85,7 +85,7 @@ function MapLoader() {
 
 function FlyTracker() {
   //
-  let gltf = useGLTF(`/particles/punz.glb`);
+  let gltf = useGLTF(`/particles/old/atv2.glb`);
 
   let actions = [];
   let mixer = new AnimationMixer(gltf.scene);
@@ -111,7 +111,7 @@ function FlyTracker() {
   let sim = useMemo(() => {
     return new TrackO3D({
       node: mini,
-      tailLength: 64, // 512, 1024
+      tailLength: 16, // 512, 1024
       howManyTrackers: trackers.length,
     });
   }, [trackers, trackers.length]);
@@ -119,10 +119,12 @@ function FlyTracker() {
   useFrame(() => {
     sim.track({ trackers, lerp: 1 });
   });
-
+  //
   return (
-    <group>
+    <group scale={0.05} position={[0, -2, 0]}>
       <primitive object={sim.o3d}></primitive>
     </group>
   );
 }
+
+//

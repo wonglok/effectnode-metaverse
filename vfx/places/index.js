@@ -35,9 +35,18 @@ export let getPages = () => {
     {
       placeID: `fly`,
       slug: `/place/fly`,
-      title: "Thank you Worship",
+      title: "GLB to Lines",
       thumbnail: `${SiteBaseURL}/preview/fly-thumb.png`,
       compo: dynamic(() => import("./fly/Fly.js"), {
+        ssr: false,
+      }),
+    },
+    {
+      placeID: `simulation`,
+      slug: `/place/simulation`,
+      title: "Thank you Jesus - Particle Simulation",
+      thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
+      compo: dynamic(() => import("./simulation/Simulation.js"), {
         ssr: false,
       }),
     },
