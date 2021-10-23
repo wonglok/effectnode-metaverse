@@ -1,5 +1,6 @@
-import { Explore } from "../vfx/explore/Explore";
+// import { Explore } from "../vfx/explore/Explore";
 
 export default function Page() {
-  return <Explore></Explore>;
+  return <div></div>;
+  // return <Explore></Explore>;
 }
