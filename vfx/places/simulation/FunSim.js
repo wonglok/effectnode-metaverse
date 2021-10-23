@@ -26,6 +26,8 @@ import { PositionSimulation } from "./PositionSimulation";
 export class LokLokWiggleSimulation {
   constructor({ node, howManyTracker = 10, howLongTail = 32 }) {
     this.node = node;
+    this.howManyTracker = howManyTracker;
+    this.howLongTail = howLongTail;
     this.WIDTH = howLongTail;
     this.HEIGHT = howManyTracker; // number of trackers
     this.COUNT = this.WIDTH * this.HEIGHT;
@@ -43,7 +45,7 @@ export class LokLokWiggleSimulation {
 
     gpu.setDataType(HalfFloatType);
 
-    let makeHeadListTex = () => {
+    let makeHeadListPositionTex = () => {
       let howManyTracker = this.HEIGHT;
       // let howLongTail = this.WIDTH;
       // let size = 1 * howManyTracker;
@@ -59,15 +61,9 @@ export class LokLokWiggleSimulation {
       // );
       // handTexture.needsUpdate = true;
 
-      let sim = new PositionSimulation({
-        mini: node,
-        howManyTracker: howManyTracker,
-        renderer: renderer,
-      });
-
       return {
         get texture() {
-          return sim.postComputeGetData();
+          return sim.getPosition();
         },
         update: () => {
           sim.compute();
@@ -115,7 +111,14 @@ export class LokLokWiggleSimulation {
         },
       };
     };
-    this.headList = makeHeadListTex();
+
+    this.simPos = new PositionSimulation({
+      mini: node,
+      howManyTracker: this.howManyTracker,
+      renderer: renderer,
+    });
+
+    // this.headListPosition = makeHeadListPositionTex();
 
     const dtPosition = this.gpu.createTexture();
     const lookUpTexture = this.gpu.createTexture();
@@ -134,7 +137,12 @@ export class LokLokWiggleSimulation {
 
     this.positionUniforms = this.positionVariable.material.uniforms;
     this.positionUniforms["lookup"] = { value: lookUpTexture };
-    this.positionUniforms["headList"] = { value: this.headList.texture };
+    this.positionUniforms["headListPosition"] = {
+      value: this.simPos.getPosition(),
+    };
+    this.positionUniforms["headListVelocity"] = {
+      value: this.simPos.getVelocity(),
+    };
 
     let h = this.HEIGHT;
     // for (let ii = 0; ii < h; ii++) {
@@ -153,8 +161,8 @@ export class LokLokWiggleSimulation {
   }
 
   track() {
-    if (this.headList) {
-      this.headList.update();
+    if (this.simPos) {
+      this.simPos.compute();
     }
   }
 
@@ -174,22 +182,12 @@ export class LokLokWiggleSimulation {
     let lookupRightLine = () => {
       let str = `
 
-      vec4 texColor = texture2D(headList, vec2(0.5, currentLine / ${this.HEIGHT.toFixed(
-        1
-      )}));
-
-
-      texColor.rgb = lerp(positionHead.rgb, texColor.rgb, 0.03333);
-
-      gl_FragColor = vec4(texColor.rgb, 1.0);
-
-
       `;
       // let h = this.HEIGHT;
       // for (let ii = 0; ii < h; ii++) {
       //   str += `
       //     else if (currentLine == ${ii.toFixed(0)}.0) {
-      //       vec4 texColor = texture2D(headList, vec2(0.0, currentLine / ${this.HEIGHT.toFixed(
+      //       vec4 texColor = texture2D(headListPosition, vec2(0.0, currentLine / ${this.HEIGHT.toFixed(
       //         1
       //       )}));
 
@@ -205,8 +203,9 @@ export class LokLokWiggleSimulation {
     };
 
     return /* glsl */ `
-      uniform sampler2D headList;
-      ${mouseUniforms()}
+    uniform sampler2D headListPosition;
+    uniform sampler2D headListVelocity;
+    ${mouseUniforms()}
 
       uniform sampler2D lookup;
       uniform float time;
@@ -230,15 +229,25 @@ export class LokLokWiggleSimulation {
         float currentIDX = floor(gl_FragCoord.x);
         float currentLine = floor(gl_FragCoord.y);
 
-        if (floor(currentIDX) == 0.0) {
-          // currentIDX
-          ${lookupRightLine()}
+        vec4 headListPosValue = texture2D(headListPosition, vec2(0.0, currentLine / ${this.HEIGHT.toFixed(
+          1
+        )}));
+        vec4 headListVelValue = texture2D(headListVelocity, vec2(0.0, currentLine / ${this.HEIGHT.toFixed(
+          1
+        )}));
+
+        if (headListPosValue.w == 0.0 || headListVelValue.w == 0.0) {
+
+          gl_FragColor = vec4(vec3(headListPosValue), 1.0);
+
         } else {
-          vec3 positionChain = texture2D( texturePosition,nextUV ).xyz;
-
-          // positionChain.rgb = lerp(positionHead.rgb, positionChain.rgb, 0.3);
-
-          gl_FragColor = vec4(positionChain, 1.0);
+          if (floor(currentIDX) == 0.0) {
+            headListPosValue.rgb = lerp(positionHead.rgb, headListPosValue.rgb, 0.05);
+            gl_FragColor = vec4(headListPosValue.rgb, 1.0);
+          } else {
+            vec3 positionChain = texture2D( texturePosition, nextUV ).xyz;
+            gl_FragColor = vec4(positionChain, 1.0);
+          }
         }
 			}
     `;
@@ -282,14 +291,6 @@ export class LokLokWiggleSimulation {
       this.positionUniforms["time"].value = window.performance.now() / 1000;
       this.gpu.compute();
     }
-
-    // trackers.forEach((track, idx) => {
-    //   let uniform = this.positionUniforms["mouse" + idx];
-    //   if (uniform && uniform.value) {
-    //     uniform.value.copy(track);
-    //     // console.log(idx, track.toArray().join("-"));
-    //   }
-    // });
   }
 
   getTextureAfterCompute() {

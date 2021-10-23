@@ -53,12 +53,174 @@ export class PositionSimulation {
 
     gpu.setDataType(HalfFloatType);
 
+    let commonProvision = `
+      vec2 uv = gl_FragCoord.xy / resolution.xy;
+      vec4 tmpPos = texture2D( texturePosition, uv );
+      vec4 tmpVel = texture2D( textureVelocity, uv );
+
+      vec3 position = tmpPos.xyz;
+      vec3 velocity = tmpVel.xyz;
+
+      float phasePos = tmpPos.w;
+      float phaseVel = tmpVel.w;
+
+
+    `;
+
+    let markToReset = (type) => {
+      if (type === "velocity") {
+        return `
+          if (length(position) >= 3.0) {
+            phaseVel = 0.0;
+          }
+        `;
+      } else if (type === "position") {
+        return `
+          if (length(position) >= 3.0) {
+            phasePos = 0.0;
+          }
+        `;
+      }
+    };
+
+    let birthPlace = (type) => {
+      if (type === "velocity") {
+        return `
+        if (phaseVel == 0.0) {
+          velocity = vec3(
+            -0.5 + rand(uv + 0.0 + velocity.x),
+            -0.5 + rand(uv + 0.2 + velocity.y),
+            -0.5 + rand(uv + 0.3 + velocity.z)
+          );
+          phaseVel = 1.0;
+        }
+        `;
+      } else if (type === "position") {
+        return `
+          if (phasePos == 0.0) {
+            position = 0.1 * vec3(
+              -0.5 + rand(uv + 0.1 + position.x),
+              -0.5 + rand(uv + 0.2 + position.y),
+              -0.5 + rand(uv + 0.3 + position.z)
+            );
+            phasePos = 1.0;
+          }
+          `;
+      }
+    };
+
+    let finalOutput = (type) => {
+      if (type === "velocity") {
+        return `
+
+          ${birthPlace("velocity")}
+          ${markToReset("velocity")}
+
+          gl_FragColor = vec4(velocity.xyz, phaseVel);
+        `;
+      } else if (type === "position") {
+        return `
+          velocity += galaxy(position);
+
+          ${birthPlace("position")}
+          ${markToReset("position")}
+          gl_FragColor = vec4(position + velocity * delta, phasePos);
+        `;
+      }
+    };
+
     let fragmentShaderVel = `
       uniform float time;
       uniform float delta;
       uniform vec3 cursorPointer;
       #include <common>
+      ${this.glslFunctions()}
+      void main ()	{
+        ${commonProvision}
+        ${finalOutput("velocity")}
+      }
+    `;
 
+    let fragmentShaderPos = `
+      uniform float time;
+      uniform float delta;
+      uniform vec3 cursorPointer;
+      #include <common>
+      ${this.glslFunctions()}
+      void main ()	{
+        ${commonProvision}
+        ${finalOutput("position")}
+      }
+
+    `;
+
+    // Create initial state float textures
+    var pos0 = gpu.createTexture();
+    var vel0 = gpu.createTexture();
+
+    // let idx = 0;
+    // let data = vel0.image.data;
+    // for (let y = 0; y < this.height; y++) {
+    //   for (let x = 0; x < this.width; x++) {
+    //     data[idx * 4 + 0] = Math.random() - 0.5;
+    //     data[idx * 4 + 1] = Math.random() - 0.5;
+    //     data[idx * 4 + 2] = Math.random() - 0.5;
+    //     data[idx * 4 + 3] = 0.0;
+    //     idx++;
+    //   }
+    // }
+
+    // and fill in here the texture data...
+    // Add texture variables
+    var velVar = gpu.addVariable("textureVelocity", fragmentShaderVel, pos0);
+    var posVar = gpu.addVariable("texturePosition", fragmentShaderPos, vel0);
+    // Add variable dependencies
+    gpu.setVariableDependencies(velVar, [velVar, posVar]);
+    gpu.setVariableDependencies(posVar, [velVar, posVar]);
+    // Add custom uniforms
+    velVar.material.uniforms.time = { value: 0.0 };
+    posVar.material.uniforms.time = { value: 0.0 };
+
+    velVar.material.uniforms.delta = { value: 1 / 60 };
+    posVar.material.uniforms.delta = { value: 1 / 60 };
+
+    velVar.material.uniforms.cursorPointer = { value: new Vector3() };
+    posVar.material.uniforms.cursorPointer = { value: new Vector3() };
+    // Check for completeness
+    var error = gpu.init();
+    if (error !== null) {
+      console.error(error);
+    }
+    // In each frame...
+    // Compute!
+
+    this.position = posVar;
+    this.velocity = velVar;
+
+    this.sync = () => {
+      if (this.cursorPointer) {
+        posVar.material.uniforms.cursorPointer.value = this.cursorPointer;
+        velVar.material.uniforms.cursorPointer.value = this.cursorPointer;
+      }
+      posVar.material.uniforms.time.value += 1 / 60;
+      velVar.material.uniforms.time.value += 1 / 60;
+    };
+  }
+
+  compute() {
+    this.sync();
+    this.gpu.compute();
+  }
+
+  getPosition() {
+    return this.gpu.getAlternateRenderTarget(this.position).texture;
+  }
+  getVelocity() {
+    return this.gpu.getCurrentRenderTarget(this.velocity).texture;
+  }
+
+  glslFunctions() {
+    return /* glsl */ `
       float constrain(float val, float min, float max) {
         if (val < min) {
             return min;
@@ -239,140 +401,6 @@ export class PositionSimulation {
       }
 
 
-
-      void main ()	{
-        vec2 uv = gl_FragCoord.xy / resolution.xy;
-        vec4 lastVel = texture2D(textureVelocity, uv);
-        vec4 lastPos = texture2D(texturePosition, uv);
-
-        vec3 velocity = lastVel.rgb;
-        vec3 position = lastPos.rgb;
-
-        float phasePos = lastPos.w;
-        float phaseVel = lastVel.w;
-
-
-        velocity.xyz = boxedSwirl(position + velocity) * 1.0;
-
-        ///
-
-
-        velocity.xyz += getDiff(position + velocity, cursorPointer) * 6.0;
-
-
-
-        if (length(position) >= 10.0) {
-          phaseVel = 0.0;
-        }
-
-        if (phasePos == 0.0 || phaseVel == 0.0) {
-          velocity = vec3(
-            -0.5 + rand(uv + 0.1 + velocity.x),
-            -0.5 + rand(uv + 0.2 + velocity.y),
-            -0.5 + rand(uv + 0.3 + velocity.z)
-          );
-          phaseVel = 1.0;
-        }
-
-        gl_FragColor = vec4(velocity.xyz, phaseVel);
-
-      }
     `;
-
-    let fragmentShaderPos = `
-      uniform float time;
-      uniform float delta;
-
-      #include <common>
-      void main ()	{
-        vec2 uv = gl_FragCoord.xy / resolution.xy;
-        vec4 tmpPos = texture2D( texturePosition, uv );
-        vec4 tmpVel = texture2D( textureVelocity, uv );
-
-        vec3 position = tmpPos.xyz;
-        vec3 velocity = tmpVel.xyz;
-
-        float phasePos = tmpPos.w;
-        float phaseVel = tmpVel.w;
-
-        if (length(position) >= 10.0) {
-          phasePos = 0.0;
-        }
-
-        if (phasePos == 0.0 || phaseVel == 0.0) {
-          position = vec3(
-            -0.5 + rand(uv + 0.1 + position.x),
-            -0.5 + rand(uv + 0.2 + position.y),
-            -0.5 + rand(uv + 0.3 + position.z)
-          );
-          phasePos = 1.0;
-        }
-
-
-
-        gl_FragColor = vec4( position + velocity * delta, phasePos );
-      }
-
-    `;
-
-    // Create initial state float textures
-    var pos0 = gpu.createTexture();
-    var vel0 = gpu.createTexture();
-
-    // let idx = 0;
-    // let data = vel0.image.data;
-    // for (let y = 0; y < this.height; y++) {
-    //   for (let x = 0; x < this.width; x++) {
-    //     data[idx * 4 + 0] = Math.random() - 0.5;
-    //     data[idx * 4 + 1] = Math.random() - 0.5;
-    //     data[idx * 4 + 2] = Math.random() - 0.5;
-    //     data[idx * 4 + 3] = 0.0;
-    //     idx++;
-    //   }
-    // }
-
-    // and fill in here the texture data...
-    // Add texture variables
-    var velVar = gpu.addVariable("textureVelocity", fragmentShaderVel, pos0);
-    var posVar = gpu.addVariable("texturePosition", fragmentShaderPos, vel0);
-    // Add variable dependencies
-    gpu.setVariableDependencies(velVar, [velVar, posVar]);
-    gpu.setVariableDependencies(posVar, [velVar, posVar]);
-    // Add custom uniforms
-    velVar.material.uniforms.time = { value: 0.0 };
-    posVar.material.uniforms.time = { value: 0.0 };
-
-    velVar.material.uniforms.delta = { value: 1 / 60 };
-    posVar.material.uniforms.delta = { value: 1 / 60 };
-
-    velVar.material.uniforms.cursorPointer = { value: new Vector3() };
-    posVar.material.uniforms.cursorPointer = { value: new Vector3() };
-    // Check for completeness
-    var error = gpu.init();
-    if (error !== null) {
-      console.error(error);
-    }
-    // In each frame...
-    // Compute!
-
-    this.position = posVar;
-
-    this.sync = () => {
-      if (this.cursorPointer) {
-        posVar.material.uniforms.cursorPointer.value = this.cursorPointer;
-        velVar.material.uniforms.cursorPointer.value = this.cursorPointer;
-      }
-      posVar.material.uniforms.time.value += 1 / 60;
-      velVar.material.uniforms.time.value += 1 / 60;
-    };
-  }
-
-  compute() {
-    this.gpu.compute();
-    this.sync();
-  }
-
-  postComputeGetData() {
-    return this.gpu.getCurrentRenderTarget(this.position).texture;
   }
 }

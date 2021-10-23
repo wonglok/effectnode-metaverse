@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { getPages } from "../../vfx/places";
 
 export async function getServerSideProps(context) {
