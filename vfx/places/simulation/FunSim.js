@@ -45,80 +45,11 @@ export class LokLokWiggleSimulation {
 
     gpu.setDataType(HalfFloatType);
 
-    let makeHeadListPositionTex = () => {
-      let howManyTracker = this.HEIGHT;
-      // let howLongTail = this.WIDTH;
-      // let size = 1 * howManyTracker;
-      //
-
-      // const textureArray = new Uint16Array(3 * size);
-      // const handTexture = new DataTexture(
-      //   textureArray,
-      //   1,
-      //   howManyTracker,
-      //   RGBFormat,
-      //   HalfFloatType
-      // );
-      // handTexture.needsUpdate = true;
-
-      return {
-        get texture() {
-          return sim.getPosition();
-        },
-        update: () => {
-          sim.compute();
-
-          // for (let i = 0; i < trackers.length; i++) {
-          //   let tracker = trackers[i];
-
-          //   if (tracker) {
-          //     tracker.userData.px = tracker.userData.px || 0;
-          //     tracker.userData.py = tracker.userData.py || 0;
-          //     tracker.userData.pz = tracker.userData.pz || 0;
-
-          //     //
-          //     tracker.userData.px = MathUtils.damp(
-          //       tracker.userData.px,
-          //       tracker.position.x,
-          //       lerp,
-          //       1 / 60
-          //     );
-          //     tracker.userData.py = MathUtils.damp(
-          //       tracker.userData.py,
-          //       tracker.position.y,
-          //       lerp,
-          //       1 / 60
-          //     );
-          //     tracker.userData.pz = MathUtils.damp(
-          //       tracker.userData.pz,
-          //       tracker.position.z,
-          //       lerp,
-          //       1 / 60
-          //     );
-
-          //     handTexture.image.data[i * 3 + 0] = DataUtils.toHalfFloat(
-          //       tracker.userData.px
-          //     );
-          //     handTexture.image.data[i * 3 + 1] = DataUtils.toHalfFloat(
-          //       tracker.userData.py
-          //     );
-          //     handTexture.image.data[i * 3 + 2] = DataUtils.toHalfFloat(
-          //       tracker.userData.pz
-          //     );
-          //   }
-          // }
-          // handTexture.needsUpdate = true;
-        },
-      };
-    };
-
     this.simPos = new PositionSimulation({
       mini: node,
       howManyTracker: this.howManyTracker,
       renderer: renderer,
     });
-
-    // this.headListPosition = makeHeadListPositionTex();
 
     const dtPosition = this.gpu.createTexture();
     const lookUpTexture = this.gpu.createTexture();
@@ -167,45 +98,9 @@ export class LokLokWiggleSimulation {
   }
 
   positionShader() {
-    let mouseUniforms = () => {
-      let str = ``;
-      let h = this.HEIGHT;
-      for (let ii = 0; ii < h; ii++) {
-        str += `
-          // uniform vec3 mouse${ii.toFixed(0)};
-        `;
-      }
-
-      return str;
-    };
-
-    let lookupRightLine = () => {
-      let str = `
-
-      `;
-      // let h = this.HEIGHT;
-      // for (let ii = 0; ii < h; ii++) {
-      //   str += `
-      //     else if (currentLine == ${ii.toFixed(0)}.0) {
-      //       vec4 texColor = texture2D(headListPosition, vec2(0.0, currentLine / ${this.HEIGHT.toFixed(
-      //         1
-      //       )}));
-
-      //       texColor.rgb = lerp(positionHead.rgb, texColor.rgb, 0.1);
-
-      //       gl_FragColor = vec4(texColor.rgb, 1.0);
-
-      //       // gl_FragColor = vec4(mouse${ii.toFixed(0)}, 1.0);
-      //     }
-      //   `;
-      // }
-      return str;
-    };
-
     return /* glsl */ `
     uniform sampler2D headListPosition;
     uniform sampler2D headListVelocity;
-    ${mouseUniforms()}
 
       uniform sampler2D lookup;
       uniform float time;
@@ -237,9 +132,7 @@ export class LokLokWiggleSimulation {
         )}));
 
         if (headListPosValue.w == 0.0 || headListVelValue.w == 0.0) {
-
           gl_FragColor = vec4(vec3(headListPosValue), 1.0);
-
         } else {
           if (floor(currentIDX) == 0.0) {
             headListPosValue.rgb = lerp(positionHead.rgb, headListPosValue.rgb, 0.05);
@@ -585,9 +478,11 @@ export class LokLokWiggleDisplay {
 
           vT = t;
 
-          vTColor = abs(getP3OfTex(0.5, offset.w) - getP3OfTex(0.6, offset.w));
+          float lineIDXER = offset.w;
 
-          vec2 volume = vec2(0.009, 0.009) * 0.3;
+          vTColor = abs(getP3OfTex(0.9, lineIDXER) - getP3OfTex(1.0, lineIDXER));
+
+          vec2 volume = vec2(0.009, 0.009) * 0.57;
           createTube(t, volume, transformed, objectNormal);
 
           vec3 transformedNormal = normalMatrix * objectNormal;

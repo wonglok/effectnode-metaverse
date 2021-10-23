@@ -111,8 +111,8 @@ function FlyTracker() {
   let sim = useMemo(() => {
     return new FunSim({
       node: mini,
-      tailLength: 32, // 512, 1024
-      howManyTrackers: 256,
+      tailLength: 64, // 512, 1024
+      howManyTrackers: 2048,
     });
   }, [trackers, trackers.length]);
 

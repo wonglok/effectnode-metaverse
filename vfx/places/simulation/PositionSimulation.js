@@ -1,26 +1,5 @@
 import { GPUComputationRenderer } from "three-stdlib";
-import {
-  HalfFloatType,
-  Vector3,
-  BufferAttribute,
-  CylinderBufferGeometry,
-  InstancedBufferAttribute,
-  InstancedBufferGeometry,
-  Vector2,
-  RepeatWrapping,
-  ShaderMaterial,
-  Mesh,
-  DataTexture,
-  DataUtils,
-  RGBFormat,
-  PlaneBufferGeometry,
-  MeshBasicMaterial,
-  TextureLoader,
-  Object3D,
-  AdditiveBlending,
-  MathUtils,
-  Clock,
-} from "three";
+import { HalfFloatType, Vector3, Clock } from "three";
 import { InteractionUI } from "./InteractionUI";
 // import { Geometry } from "three/examples/jsm/deprecated/Geometry.js";
 
@@ -63,20 +42,28 @@ export class PositionSimulation {
 
       float phasePos = tmpPos.w;
       float phaseVel = tmpVel.w;
-
-
     `;
+
+    let commonHeaders = () => {
+      return `
+        bool detectReset (vec3 position) {
+          // return length(position) >= 10.0;
+
+          return mod(time, 15.0) < 0.1;
+        }
+      `;
+    };
 
     let markToReset = (type) => {
       if (type === "velocity") {
         return `
-          if (length(position) >= 3.0) {
+          if (detectReset(position)) {
             phaseVel = 0.0;
           }
         `;
       } else if (type === "position") {
         return `
-          if (length(position) >= 3.0) {
+          if (detectReset(position)) {
             phasePos = 0.0;
           }
         `;
@@ -120,7 +107,7 @@ export class PositionSimulation {
         `;
       } else if (type === "position") {
         return `
-          velocity += galaxy(position);
+        velocity += galaxy(position + velocity);
 
           ${birthPlace("position")}
           ${markToReset("position")}
@@ -135,6 +122,7 @@ export class PositionSimulation {
       uniform vec3 cursorPointer;
       #include <common>
       ${this.glslFunctions()}
+      ${commonHeaders()}
       void main ()	{
         ${commonProvision}
         ${finalOutput("velocity")}
@@ -147,6 +135,7 @@ export class PositionSimulation {
       uniform vec3 cursorPointer;
       #include <common>
       ${this.glslFunctions()}
+      ${commonHeaders()}
       void main ()	{
         ${commonProvision}
         ${finalOutput("position")}
