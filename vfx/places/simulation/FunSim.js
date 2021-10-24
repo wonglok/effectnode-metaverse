@@ -10,21 +10,30 @@ import {
   RepeatWrapping,
   ShaderMaterial,
   Mesh,
-  DataTexture,
-  DataUtils,
-  RGBFormat,
-  PlaneBufferGeometry,
-  MeshBasicMaterial,
-  TextureLoader,
+
+  //
+
+  // DataTexture,
+  // DataUtils,
+  // RGBFormat,
+  // PlaneBufferGeometry,
+  // MeshBasicMaterial,
+  // TextureLoader,
+  // AdditiveBlending,
+  // MathUtils,
   Object3D,
+  BackSide,
   AdditiveBlending,
-  MathUtils,
+  DoubleSide,
+  NormalBlending,
+  FrontSide,
 } from "three";
 import { Geometry } from "three/examples/jsm/deprecated/Geometry.js";
 import { PositionSimulation } from "./PositionSimulation";
 
 export class LokLokWiggleSimulation {
-  constructor({ node, howManyTracker = 10, howLongTail = 32 }) {
+  constructor({ node, howManyTracker = 10, howLongTail = 32, influences }) {
+    this.influences = influences;
     this.node = node;
     this.howManyTracker = howManyTracker;
     this.howLongTail = howLongTail;
@@ -48,7 +57,9 @@ export class LokLokWiggleSimulation {
     this.simPos = new PositionSimulation({
       mini: node,
       howManyTracker: this.howManyTracker,
+      influences: this.influences,
       renderer: renderer,
+      cursorPointer: this.cursorPointer,
     });
 
     const dtPosition = this.gpu.createTexture();
@@ -202,9 +213,6 @@ export class LokLokWiggleDisplay {
     this.wait = this.setup({ node });
   }
   async setup({ node }) {
-    // let camera = await node.ready.camera;
-    // let renderer = await node.ready.gl;
-
     let { geometry, subdivisions, count } = new NoodleGeo({
       count: this.sim.HEIGHT,
       numSides: 4,
@@ -213,102 +221,6 @@ export class LokLokWiggleDisplay {
     });
 
     geometry.instanceCount = count;
-
-    // let getPointAtByT = ({
-    //   controlPointsResolution = 20,
-    //   lineIdx = 0,
-    //   lineCount = this.sim.HEIGHT,
-    //   textureName = "CONTROL_POINTS",
-    // }) => {
-    //   controlPointsResolution = Math.floor(controlPointsResolution);
-
-    //   let floatval = `${Number(controlPointsResolution).toFixed(1)}`;
-
-    //   let res = `
-    //   vec3 pointIDX_${textureName}_${lineIdx.toFixed(0)} (float index) {
-    //     vec3 result = vec3(0.0);
-
-    //     vec4 color = texture2D(${textureName},
-    //       vec2(
-    //         index / ${controlPointsResolution.toFixed(1)},
-    //         ${lineIdx.toFixed(1)} / ${lineCount.toFixed(1)}
-    //       )
-    //     );
-
-    //     result = color.rgb;
-
-    //     return result;
-    //   }
-
-    //   vec3 catmullRom_${textureName}_${lineIdx} (vec3 p0, vec3 p1, vec3 p2, vec3 p3, float t) {
-    //       vec3 v0 = (p2 - p0) * 0.5;
-    //       vec3 v1 = (p3 - p1) * 0.5;
-    //       float t2 = t * t;
-    //       float t3 = t * t * t;
-
-    //       return vec3((2.0 * p1 - 2.0 * p2 + v0 + v1) * t3 + (-3.0 * p1 + 3.0 * p2 - 2.0 * v0 - v1) * t2 + v0 * t + p1);
-    //   }
-
-    //   vec3 getPointAt_${lineIdx.toFixed(0)} (float t) {
-    //     bool closed = false;
-    //     float ll = ${floatval};
-    //     float minusOne = 1.0;
-    //     if (closed) {
-    //       minusOne = 0.0;
-    //     }
-
-    //     float p = (ll - minusOne) * t;
-    //     float intPoint = floor(p);
-    //     float weight = p - intPoint;
-
-    //     float idx0 = intPoint + -1.0;
-    //     float idx1 = intPoint +  0.0;
-    //     float idx2 = intPoint +  1.0;
-    //     float idx3 = intPoint +  2.0;
-
-    //     vec3 pt0 = pointIDX_${textureName}_${lineIdx.toFixed(0)}(idx0);
-    //     vec3 pt1 = pointIDX_${textureName}_${lineIdx.toFixed(0)}(idx1);
-    //     vec3 pt2 = pointIDX_${textureName}_${lineIdx.toFixed(0)}(idx2);
-    //     vec3 pt3 = pointIDX_${textureName}_${lineIdx.toFixed(0)}(idx3);
-
-    //     vec3 pointoutput = catmullRom_${textureName}_${lineIdx}(pt0, pt1, pt2, pt3, weight);
-
-    //     return pointoutput;
-    //   }
-    //   `;
-
-    //   // console.log(res);
-    //   return res;
-    // };
-
-    // let getLinesPointAtT = () => {
-    //   let str = `
-    //       if (false) {}`;
-    //   for (let i = 0; i < this.sim.HEIGHT; i++) {
-    //     str += `
-    //       else if (lineIDXER == ${i.toFixed(1)}) {
-    //         pt += getPointAt_${i.toFixed(0)}(t);
-    //       }
-    //     `;
-    //   }
-    //   // console.log(str);
-
-    //   return str;
-    // };
-
-    // let pointLineMaker = () => {
-    //   let str = "";
-    //   for (let i = 0; i < this.sim.HEIGHT; i++) {
-    //     str +=
-    //       getPointAtByT({
-    //         lineIdx: i,
-    //         lineCount: this.sim.HEIGHT,
-    //         controlPointsResolution: subdivisions,
-    //         textureName: "posTexture",
-    //       }) + "\n";
-    //   }
-    //   return str;
-    // };
 
     let matLine0 = new ShaderMaterial({
       uniforms: {
@@ -338,105 +250,64 @@ export class LokLokWiggleDisplay {
 
         uniform float time;
 
-        mat4 rotationX( in float angle ) {
-          return mat4(	1.0,		0,			0,			0,
-                  0, 	cos(angle),	-sin(angle),		0,
-                  0, 	sin(angle),	 cos(angle),		0,
-                  0, 			0,			  0, 		1);
-        }
-
-        mat4 rotationY( in float angle ) {
-          return mat4(	cos(angle),		0,		sin(angle),	0,
-                      0,		1.0,			 0,	0,
-                  -sin(angle),	0,		cos(angle),	0,
-                      0, 		0,				0,	1);
-        }
-
-        mat4 rotationZ( in float angle ) {
-          return mat4(	cos(angle),		-sin(angle),	0,	0,
-                  sin(angle),		cos(angle),		0,	0,
-                      0,				0,		1,	0,
-                      0,				0,		0,	1);
-        }
-
-        mat4 rotationMatrix (vec3 axis, float angle) {
-            axis = normalize(axis);
-            float s = sin(angle);
-            float c = cos(angle);
-            float oc = 1.0 - c;
-
-            return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-                        oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-                        oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-                        0.0,                                0.0,                                0.0,                                1.0);
-        }
 
         // pointLineMaker
 
-
-        vec3 catmullRom (vec3 p0, vec3 p1, vec3 p2, vec3 p3, float t) {
-            vec3 v0 = (p2 - p0) * 0.5;
-            vec3 v1 = (p3 - p1) * 0.5;
-            float t2 = t * t;
-            float t3 = t * t * t;
-
-            return vec3((2.0 * p1 - 2.0 * p2 + v0 + v1) * t3 + (-3.0 * p1 + 3.0 * p2 - 2.0 * v0 - v1) * t2 + v0 * t + p1);
-        }
-
-        vec3 getP3OfTex (float t, float lineIDXER) {
+        vec3 getLineByT (float t, float lineIndex) {
 
           vec4 color = texture2D(posTexture,
             vec2(
               t,
-              lineIDXER / ${this.sim.HEIGHT.toFixed(1)}
+              lineIndex / ${this.sim.HEIGHT.toFixed(1)}
             )
           );
 
           return color.rgb;
         }
-        vec3 getPointAt (float t, float lineIDXER) {
-          bool closed = false;
-          float ll = ${subdivisions.toFixed(1)};
-          float minusOne = 1.0;
-          if (closed) {
-            minusOne = 0.0;
-          }
 
-          float p = (ll - minusOne) * t;
-          float intPoint = floor(p);
-          float weight = p - intPoint;
 
-          float idx0 = intPoint + -1.0;
-          float idx1 = intPoint +  0.0;
-          float idx2 = intPoint +  1.0;
-          float idx3 = intPoint +  2.0;
+        // vec3 catmullRom (vec3 p0, vec3 p1, vec3 p2, vec3 p3, float t) {
+        //     vec3 v0 = (p2 - p0) * 0.5;
+        //     vec3 v1 = (p3 - p1) * 0.5;
+        //     float t2 = t * t;
+        //     float t3 = t * t * t;
 
-          vec3 pt0 = getP3OfTex(idx0, lineIDXER);
-          vec3 pt1 = getP3OfTex(idx1, lineIDXER);
-          vec3 pt2 = getP3OfTex(idx2, lineIDXER);
-          vec3 pt3 = getP3OfTex(idx3, lineIDXER);
+        //     return vec3((2.0 * p1 - 2.0 * p2 + v0 + v1) * t3 + (-3.0 * p1 + 3.0 * p2 - 2.0 * v0 - v1) * t2 + v0 * t + p1);
+        // }
 
-          vec3 pointoutput = catmullRom(pt0, pt1, pt2, pt3, weight);
+        // vec3 getLineByCtrlPts (float t, float lineIndex) {
+        //   bool closed = false;
+        //   float ll = ${subdivisions.toFixed(1)};
+        //   float minusOne = 1.0;
+        //   if (closed) {
+        //     minusOne = 0.0;
+        //   }
 
-          return pointoutput;
-        }
+        //   float p = (ll - minusOne) * t;
+        //   float intPoint = floor(p);
+        //   float weight = p - intPoint;
+
+        //   float idx0 = intPoint + -1.0;
+        //   float idx1 = intPoint +  0.0;
+        //   float idx2 = intPoint +  1.0;
+        //   float idx3 = intPoint +  2.0;
+
+        //   vec3 pt0 = getLineByT(idx0, lineIndex);
+        //   vec3 pt1 = getLineByT(idx1, lineIndex);
+        //   vec3 pt2 = getLineByT(idx2, lineIndex);
+        //   vec3 pt3 = getLineByT(idx3, lineIndex);
+
+        //   vec3 pointoutput = catmullRom(pt0, pt1, pt2, pt3, weight);
+
+        //   return pointoutput;
+        // }
 
         vec3 sampleFnc (float t) {
           vec3 pt = (offset.xyz + 0.5) * 0.0;
 
-          // pt = vec4(vec4(pt, 1.0) * rotationY(t * 0.1 + time * 0.1)).xyz;
-          // if (lineIDXER == 0.0) {
-          //   pt += getPointAt_0(t);
-          // }
+          float lineIndex = offset.w;
 
-          float lineIDXER = offset.w;
-
-          pt += getP3OfTex(t, lineIDXER);
-          // pt += getPointAt_0(t);
-
-          // getLinesPointAtT
-
-          // pt = getPointAt_2(t);
+          pt += getLineByT(t, lineIndex);
 
           return pt;
         }
@@ -469,6 +340,7 @@ export class LokLokWiggleDisplay {
         varying vec3 vViewPosition;
 
         varying vec3 vTColor;
+        varying float vLineCycle;
 
         void main (void) {
           vec3 transformed;
@@ -479,10 +351,14 @@ export class LokLokWiggleDisplay {
           vT = t;
 
           float lineIDXER = offset.w;
+          float lineCount = ${this.sim.HEIGHT.toFixed(2)};
 
-          vTColor = abs(getP3OfTex(0.9, lineIDXER) - getP3OfTex(1.0, lineIDXER));
+          vLineCycle = lineIDXER / lineCount;
 
-          vec2 volume = vec2(0.009, 0.009) * 0.57;
+          vTColor = normalize(getLineByT(0.5, lineIDXER) - getLineByT(0.6, lineIDXER));
+
+
+          vec2 volume = vec2(0.009, 0.009) * 0.8;
           createTube(t, volume, transformed, objectNormal);
 
           vec3 transformedNormal = normalMatrix * objectNormal;
@@ -502,21 +378,43 @@ export class LokLokWiggleDisplay {
         varying vec3 vViewPosition;
         uniform sampler2D matcap;
         varying vec3 vTColor;
+        varying float vLineCycle;
+
+
+        vec3 catmullRom (vec3 p0, vec3 p1, vec3 p2, vec3 p3, float t) {
+            vec3 v0 = (p2 - p0) * 0.5;
+            vec3 v1 = (p3 - p1) * 0.5;
+            float t2 = t * t;
+            float t3 = t * t * t;
+
+            return vec3((2.0 * p1 - 2.0 * p2 + v0 + v1) * t3 + (-3.0 * p1 + 3.0 * p2 - 2.0 * v0 - v1) * t2 + v0 * t + p1);
+        }
 
         void main (void) {
 
-          vec3 viewDir = normalize( vViewPosition );
-          vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );
-          vec3 y = cross( viewDir, x );
-          vec2 uv = vec2( dot( x, vNormal ), dot( y, vNormal ) ) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
+          // vec3 viewDir = normalize( vViewPosition );
+          // vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );
+          // vec3 y = cross( viewDir, x );
+          // vec2 uv = vec2( dot( x, vNormal ), dot( y, vNormal ) ) * 0.495 + 0.5; // 0.495 to remove artifacts caused by undersized matcap disks
 
           // vec4 matcapColor = texture2D( matcap, uv );
 
-          gl_FragColor = vec4(normalize(vTColor), (1.0 - vT));
+          float tt = (1.0 - vT);
+          // gl_FragColor = vec4(catmullRom(
+          //   vec3(1.0),
+          //   vec3(0.0, 0.0, 1.0),
+          //   vec3(0.0, 1.0, 0.0),
+          //   vec3(1.0, 0.0, 0.0),
+          //   vLineCycle + tt
+          // ), tt);
+          gl_FragColor = vec4(abs(normalize(vTColor + sin(vLineCycle * 3.141592 * 2.0))), tt);
         }
       `,
       transparent: true,
-      // blending: AdditiveBlending,
+      side: FrontSide,
+      depthTest: false,
+      depthWrite: false,
+      // blending: ,
     });
 
     let line0 = new Mesh(geometry, matLine0);
@@ -537,86 +435,6 @@ export class LokLokWiggleDisplay {
       matLine0.uniforms.time.value = window.performance.now() / 1000;
     });
   }
-
-  // async enableMousePlane() {
-  //   let raycaster = await node.ready.raycaster;
-  //   let mouse = await node.ready.mouse;
-  //   let camera = await node.ready.camera;
-  //   let viewport = await node.ready.viewport;
-
-  //   let geoPlane = new PlaneBufferGeometry(
-  //     2.0 * viewport.width,
-  //     2.0 * viewport.height,
-  //     2,
-  //     2
-  //   );
-
-  //   let matPlane = new MeshBasicMaterial({
-  //     transparent: true,
-  //     opacity: 0.25,
-  //     color: 0xff0000,
-  //   });
-
-  //   let planeMesh = new Mesh(geoPlane, matPlane);
-  //   planeMesh.position.z = -camera.position.z / 2;
-
-  //   scene.add(planeMesh);
-  //   node.onClean(() => {
-  //     scene.remove(planeMesh);
-  //   });
-
-  //   let temppos = new Vector3();
-  //   node.onLoop(() => {
-  //     planeMesh.lookAt(camera.position);
-  //     raycaster.setFromCamera(mouse, camera);
-  //     let res = raycaster.intersectObject(planeMesh);
-  //     if (res && res[0]) {
-  //       temppos.copy(res[0].point);
-  //     }
-  //   });
-  // }
-
-  // enableHandTexture() {
-  //   const width = this.sim.WIDTH;
-  //   const height = this.sim.HEIGHT;
-  //   const size = width * height;
-
-  //   let handMovement = [];
-  //   let temppos = new Vector3();
-  //   for (let i = 0; i < size; i++) {
-  //     AvatarHead.getWorldPosition(temppos);
-
-  //     let x = temppos.x || 0;
-  //     let y = temppos.y || 0;
-  //     let z = temppos.z || 0;
-  //     //
-  //     handMovement.unshift(x, y, z);
-  //   }
-
-  //   const textureArray = new Uint16Array(3 * size);
-  //   const handTexture = new DataTexture(
-  //     textureArray,
-  //     width,
-  //     height,
-  //     RGBFormat,
-  //     HalfFloatType
-  //   );
-  //   handTexture.needsUpdate = true;
-
-  //   node.onLoop(() => {
-  //     handMovement.push(DataUtils.toHalfFloat(temppos.x) || 0);
-  //     handMovement.push(DataUtils.toHalfFloat(temppos.y) || 0);
-  //     handMovement.push(DataUtils.toHalfFloat(temppos.z) || 0);
-
-  //     handMovement.shift();
-  //     handMovement.shift();
-  //     handMovement.shift();
-
-  //     textureArray.set(handMovement, 0);
-  //     handTexture.needsUpdate = true;
-  //     mat.uniforms.handTexture.value = handTexture;
-  //   });
-  // }
 }
 
 class NoodleGeo {
@@ -701,21 +519,26 @@ class NoodleGeo {
     lineGeo.setAttribute("angle", new BufferAttribute(angleArray, 1));
     lineGeo.setAttribute("uv", new BufferAttribute(uvArray, 2));
 
+    // let offset = [];
+    // let ddxyz = Math.floor(Math.pow(count, 1 / 3));
+    // let iii = 0;
+    // for (let z = 0; z < ddxyz; z++) {
+    //   for (let y = 0; y < ddxyz; y++) {
+    //     for (let x = 0; x < ddxyz; x++) {
+    //       offset.push(
+    //         0.0, //  * (x / ddxyz) * 2.0 - 1.0,
+    //         0.0, //  * (y / ddxyz) * 2.0 - 1.0,
+    //         0.0, //  * (z / ddxyz) * 2.0 - 1.0,
+    //         iii
+    //       );
+    //       iii++;
+    //     }
+    //   }
+    // }
+
     let offset = [];
-    let ddxyz = Math.floor(Math.pow(count, 1 / 3));
-    let iii = 0;
-    for (let z = 0; z < ddxyz; z++) {
-      for (let y = 0; y < ddxyz; y++) {
-        for (let x = 0; x < ddxyz; x++) {
-          offset.push(
-            0.0, //  * (x / ddxyz) * 2.0 - 1.0,
-            0.0, //  * (y / ddxyz) * 2.0 - 1.0,
-            0.0, //  * (z / ddxyz) * 2.0 - 1.0,
-            iii
-          );
-          iii++;
-        }
-      }
+    for (let i = 0; i < count; i++) {
+      offset.push(0, 0, 0, i);
     }
 
     // let ddxyz = Math.floor(Math.pow(count, 1 / 2));
@@ -749,26 +572,36 @@ class NoodleGeo {
 }
 
 export class FunSim {
-  constructor({ node, howManyTrackers = 8, tailLength = 64 }) {
+  constructor({
+    node,
+    cursorPointer,
+    howManyTrackers = 8,
+    influences,
+    tailLength = 64,
+  }) {
+    this.influences = influences;
+    this.cursorPointer = cursorPointer;
     this.o3d = new Object3D();
     this.node = node;
     this.howManyTrackers = howManyTrackers;
     this.tailLength = tailLength;
     this.setup({ node });
   }
+
   async setup({ node }) {
     //
     let sim = new LokLokWiggleSimulation({
       node,
       howManyTracker: this.howManyTrackers,
+      influences: this.influences,
       howLongTail: this.tailLength,
+      cursorPointer: this.cursorPointer,
     });
 
     let display = new LokLokWiggleDisplay({ node, sim });
 
     this.o3d.add(display.o3d);
 
-    console.log(display.o3d);
     node.onClean(() => {
       this.o3d.remove(display.o3d);
     });

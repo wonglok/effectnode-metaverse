@@ -46,7 +46,7 @@ export let getPages = () => {
       slug: `/place/simulation`,
       title: "Thank you Jesus - Particle Simulation",
       thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
-      compo: dynamic(() => import("./simulation/Simulation.js"), {
+      compo: dynamic(() => import("./simulation/SimPage.js"), {
         ssr: false,
       }),
     },

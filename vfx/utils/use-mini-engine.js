@@ -22,5 +22,5 @@ export function useMiniEngine() {
     mini.work();
   });
 
-  return { mini };
+  return { mini, get };
 }
