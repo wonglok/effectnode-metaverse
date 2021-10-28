@@ -365,7 +365,7 @@ export class PositionSimulation {
         #include <common>
 
         bool detectReset (vec3 position) {
-          return length(position) >= 10.0;
+          return length(position) >= 30.0;
 
           // return mod(time, 20.0) < 0.01;
         }
@@ -399,13 +399,13 @@ export class PositionSimulation {
       } else if (type === "position") {
         return `
           if (phasePos == 0.0) {
-            position = 0.1 * vec3(
+            position = 10.0 * vec3(
               -0.5 + rand(uv + 0.1 + position.x),
               -0.5 + rand(uv + 0.2 + position.y),
               -0.5 + rand(uv + 0.3 + position.z)
             );
 
-            // position.y += 2.0;
+            position.y += 2.0;
             phasePos = 1.0;
           }
           `;
@@ -462,8 +462,6 @@ export class PositionSimulation {
     var pos0 = gpu.createTexture();
     var vel0 = gpu.createTexture();
 
-    //
-
     // and fill in here the texture data...
     // Add texture variables
     var velVar = gpu.addVariable(
@@ -471,6 +469,7 @@ export class PositionSimulation {
       this.fragmentShaderVel(),
       pos0
     );
+
     var posVar = gpu.addVariable(
       "texturePosition",
       this.fragmentShaderPos(),
@@ -500,8 +499,8 @@ export class PositionSimulation {
       },
     };
 
-    velVar.material.uniforms.cursorPointer = { value: new Vector3() };
-    posVar.material.uniforms.cursorPointer = { value: new Vector3() };
+    velVar.material.uniforms.cursorPointer = { value: this.cursorPointer };
+    posVar.material.uniforms.cursorPointer = { value: this.cursorPointer };
     // Check for completeness
     var error = gpu.init();
     if (error !== null) {

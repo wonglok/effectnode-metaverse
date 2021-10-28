@@ -1,3 +1,4 @@
-import { makeNow } from "../utils/make-now";
+import { makeNow, NowType } from "../utils/make-now";
 
+/** @type {NowType} */
 export const Now = makeNow();

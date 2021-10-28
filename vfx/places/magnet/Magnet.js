@@ -1,134 +1,150 @@
-import {
-  useCubeTexture,
-  useGLTF,
-  OrbitControls as DOribt,
-  Plane,
-} from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { createPortal, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Preload } from "../../canvas/Preload/Preload";
 import { Starter } from "../../canvas/Starter/Starter";
 import { Assets, AQ } from "./Assets";
 import {
-  CatmullRomCurve3,
-  Object3D,
-  Vector3,
-  sRGBEncoding,
-  Color,
-  AnimationMixer,
-  Mesh,
-  SphereBufferGeometry,
-  MeshBasicMaterial,
-  GridHelper,
   AxesHelper,
-  MeshStandardMaterial,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  SphereBufferGeometry,
+  Vector3,
 } from "three";
 import { SkeletonUtils } from "three/examples/jsm/utils/SkeletonUtils";
 import { ColliderManager } from "../../classes/ColliderManager";
+import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
 import { Now } from "../../store/Now";
 import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
+import { StarSky } from "../../canvas/StarSky/StarSky";
 import { useEnvLight } from "../../utils/use-env-light";
-import { FunSim } from "./FunSim";
-// import { PlayerCollider } from "../../canvas/PlayerCollider/PlayerCollider";
-// import { SkyViewControls } from "../../canvas/Controls/SkyViewControls";
-// import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
-// import { StarSky } from "../../canvas/StarSky/StarSky";
-// import { useEnvLight } from "../../utils/use-env-light";
-// import { FlyTeleport } from "../../game/Portals/FlyTeleport";
-// import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
-
-// import { SimpleBloomer } from "../../canvas/PostProcessing/SimpleBloomer";
+import { WalkerFollowerControls } from "../../canvas/Controls/WalkerFollowerControls";
+import { PlayerDisplay } from "../../canvas/PlayerDisplay/PlayerDisplay";
+import { ForceGraphR3F } from "../../explore/ForceGraphR3F";
+import { useAutoEvent } from "../../utils/use-auto-event";
+import { baseURL } from "..";
+import router from "next/router";
 import { useMiniEngine } from "../../utils/use-mini-engine";
-import { InteractionUI } from "./InteractionUI";
+import { FunSim } from "../simulation/FunSim";
+import { FirstCamControls } from "../../canvas/Controls/FirstCamControls";
 
-export default function Simulation() {
+export default function Magnet() {
   return (
     <div className="h-full w-full">
-      <Starter reducedMaxDPI={3}>
+      <Starter>
         <Preload Assets={Assets}>
-          <Suspense fallback={null}>
-            <MapLoader></MapLoader>
-            <BG></BG>
-          </Suspense>
+          <MapLoader></MapLoader>
           <SimpleBloomer></SimpleBloomer>
-          {/* <StarSky></StarSky> */}
+          <StarSky></StarSky>
         </Preload>
       </Starter>
     </div>
   );
 }
 
-function BG({ children }) {
-  let { get } = useThree();
-
-  const envMap = useCubeTexture(
-    ["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"],
-    { path: "/cubemap/sky-grass/" }
-  );
-
-  useEffect(() => {
-    let orig = get().scene.background;
-    // envMap.encoding = sRGBEncoding;
-    // get().scene.background = envMap;
-
-    get().scene.background = new Color("#000000");
-
-    return () => {
-      get().scene.background = orig;
-    };
-  }, []);
-  return <group>{children}</group>;
-}
-
 function MapLoader() {
   return (
     <group>
       <Suspense fallback={null}>
-        <FunSimCom></FunSimCom>
-        <UControls></UControls>
+        <MapContent></MapContent>
       </Suspense>
     </group>
   );
 }
 
-function UControls() {
-  //
+function MapContent() {
   let { get } = useThree();
+  let gltf = useGLTF(AQ.floorMap.url);
+  let { envMap } = useEnvLight();
+
+  let floor = useMemo(() => {
+    let floor = SkeletonUtils.clone(gltf.scene);
+    // floor.rotation.y = Math.PI * 0.5;
+
+    let startAt = floor.getObjectByName("startAt");
+    if (startAt) {
+      startAt.getWorldPosition(Now.startAt);
+      startAt.getWorldPosition(Now.avatarAt);
+      startAt.getWorldPosition(Now.goingTo);
+      Now.goingTo.y += 1.3;
+    }
+    return floor;
+  }, [gltf]);
+
+  let colliderManager = useMemo(() => {
+    return new ColliderManager({ floor, scene: get().scene });
+  }, [floor]);
+
+  let o3d = new Object3D();
+
+  let metagraph = useRef();
 
   useEffect(() => {
-    get().camera.fov = 40;
-    get().camera.position.x = 0;
-    get().camera.position.y = 0;
-    get().camera.position.z = 35;
-    get().camera.updateMatrix();
-    get().camera.updateProjectionMatrix();
-
-    InteractionUI.fixTouchScreen({ target: get().gl.domElement.parentElement });
-  }, []);
-  let ref = useRef();
-  useFrame(({ camera }) => {
-    if (ref.current) {
-      ref.current.lookAt(camera.position);
+    //
+    //
+    if (metagraph.current) {
+      floor
+        .getObjectByName("startAt")
+        .getWorldPosition(metagraph.current.position);
+      metagraph.current.position.x += -1;
+      metagraph.current.position.y += 1.3;
+      metagraph.current.position.z += -5;
+      metagraph.current.scale.setScalar(0.03);
     }
-  });
+    //
+    //
+  }, []);
+
   return (
     <group>
-      {/* <DOribt></DOribt> */}
-      <Plane
-        onPointerMove={(ev) => {
-          window.dispatchEvent(new CustomEvent("gridPt", { detail: ev.point }));
-        }}
-        ref={ref}
-        args={[100, 100, 50, 50]}
-      >
-        <meshBasicMaterial
-          color={"#ffffff"}
-          wireframe={true}
-        ></meshBasicMaterial>
-      </Plane>
+      <directionalLight intensity={3} position={[3, 3, 3]} />
+      <primitive object={o3d}></primitive>
+      {createPortal(<primitive object={floor}></primitive>, o3d)}
+
+      {createPortal(
+        <group visible={false}>
+          <primitive object={colliderManager.preview}></primitive>
+        </group>,
+        o3d
+      )}
+
+      <PlayerCollider
+        Now={Now}
+        colliderMesh={colliderManager.collider}
+      ></PlayerCollider>
+
+      <PlayerDisplay
+        lookBack={true}
+        envMap={envMap}
+        Now={Now}
+        floor={floor}
+        isSwim={true}
+      ></PlayerDisplay>
+
+      {/*
+      <group ref={metagraph}>
+        <ForceGraphR3F></ForceGraphR3F>
+      </group> */}
+
+      <FirstCamControls
+        Now={Now}
+        higherCamera={2.0}
+        colliderMesh={colliderManager.collider}
+      ></FirstCamControls>
+
+      {/* <WalkerFollowerControls floor={floor}></WalkerFollowerControls> */}
+
+      <FunSimCom></FunSimCom>
     </group>
   );
 }
+
+//
+
+//
+
+//
 
 function FunSimCom() {
   // let { get } = useThree();
@@ -147,50 +163,61 @@ function FunSimCom() {
         //   type: `computeAttract`,
         //   enabled: true,
         //   needsUpdate: true,
-        //   mouse: false,
+        //   mouse: true,
         //   position: { x: 0, y: 0, z: 0 },
         //   force: 40,
         //   radius: 4,
         //   min: -4.0,
         //   max: 4.0,
         // },
+
         {
           type: `computeSphere`,
           enabled: true,
           mouse: true,
           needsUpdate: true,
           position: { x: 0, y: 0, z: 0 },
-          radius: 2,
+          radius: 50,
           force: 35.0,
           noise: 3.0,
         },
-
-        {
-          type: `computeSphere`,
-          enabled: true,
-          mouse: false,
-          needsUpdate: true,
-          position: { x: 0, y: 0, z: 0 },
-          radius: 1.5,
-          force: -30.0,
-          noise: 3.0,
-        },
-
-        //
         // {
-        //   type: `computeGravity`,
+        //   type: `computeSphere`,
         //   enabled: true,
-        //   direction: { x: 0, y: -1, z: 0 },
-        //   force: -1,
+        //   mouse: false,
+        //   needsUpdate: true,
+        //   position: { x: 0, y: 0, z: 0 },
+        //   radius: 1.5,
+        //   force: -30.0 * 1.3,
+        //   noise: 3.0,
         // },
+        //
+        {
+          type: `computeGravity`,
+          enabled: true,
+          direction: { x: 0, y: -1, z: 0 },
+          force: 3,
+        },
       ],
       tailLength: 64, // 512, 1024
       howManyTrackers: 2048,
     });
   }, [mini, cursorPointer]);
 
-  useFrame(() => {
+  useFrame(({ camera }) => {
     sim.track();
+
+    // sim.influences[1].position.x = camera.position.x * 0.0;
+    // sim.influences[1].position.y = camera.position.y * 1;
+    // sim.influences[1].position.z = camera.position.z * 0.0;
+    // sim.influences[1].needsUpdate = true;
+
+    sim.influences[0].position.x = Now.avatarAt.x;
+    sim.influences[0].position.y = Now.avatarAt.y;
+    sim.influences[0].position.z = Now.avatarAt.z;
+    sim.influences[0].needsUpdate = true;
+
+    cursorPointer.copy(camera.position);
   });
 
   useEffect(() => {
@@ -210,7 +237,7 @@ function FunSimCom() {
 
   return (
     <group position={[0, 0, 0]}>
-      {/* <DOrbit /> */}
+      {/* <OrbitDrei /> */}
       <Visualise influ={sim.influences} />
       <primitive object={sim.o3d}></primitive>
     </group>

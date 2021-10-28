@@ -50,6 +50,15 @@ export let getPages = () => {
         ssr: false,
       }),
     },
+    {
+      placeID: `magnet`,
+      slug: `/place/magnet`,
+      title: "Thank you Jesus - Line Magnet",
+      thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
+      compo: dynamic(() => import("./magnet/Magnet.js"), {
+        ssr: false,
+      }),
+    },
   ];
 };
 

@@ -53,12 +53,12 @@ let getInternal = () => {
   };
 };
 
-export const makeNow = () => {
-  let Type = {
-    ...getInternal(),
-    ...ShallowStoreMethods,
-  };
+/** @type {Type} */
+export let NowType = {
+  ...getInternal(),
+  ...ShallowStoreMethods,
+};
 
-  /** @type {Type} */
+export const makeNow = () => {
   return makeShallowStore(getInternal());
 };

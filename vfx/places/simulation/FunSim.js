@@ -412,9 +412,9 @@ export class LokLokWiggleDisplay {
       `,
       transparent: true,
       side: FrontSide,
-      depthTest: false,
-      depthWrite: false,
-      // blending: ,
+      depthTest: true,
+      depthWrite: true,
+      blending: NormalBlending,
     });
 
     let line0 = new Mesh(geometry, matLine0);
