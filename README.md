@@ -12,9 +12,11 @@ We all don’t really like having to pay a royalty fee to every creation that we
 
 ---
 
-# VFX on 3D Web
+## VFX on 3D Web
 
 ![Simulation](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/simulation.png)
+
+[Simulation of Noodles](https://metaverse.effectnode.com/place/simulation)
 
 Effet Node is an on-going group of projects made by Lok Lok.
 
@@ -31,6 +33,16 @@ Effect Node has evolved throughout the years to improve the developer experience
 The sole inventor of Effect Node, Lok Lok, wants to share many of his expertise in webgl engineering, through this open source boilerplate
 
 ---
+
+## Blender Workflow with Effectnode
+
+[Blender Motion to EffectNode](https://metaverse.effectnode.com/place/fly)
+
+[Blender File](https://github.com/wonglok/effectnode-metaverse/tree/master/blender)
+
+![Blender with EffectNode](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/blender-with-effectnode.png)
+
+![Blender export motion](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/blender-particlewonder.png)
 
 ## Crawling on METAVERSE made Possible
 
