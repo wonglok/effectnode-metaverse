@@ -34,6 +34,12 @@ The sole inventor of Effect Node, Lok Lok, wants to share many of his expertise 
 
 ---
 
+## Falling Noodles
+
+[Demo Noodle Map](https://metaverse.effectnode.com/place/magnet)
+
+![Falling Noodles with Avatar](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/fallingnoodles.png)
+
 ## Blender Workflow with Effectnode
 
 [Blender Motion to EffectNode](https://metaverse.effectnode.com/place/fly)
