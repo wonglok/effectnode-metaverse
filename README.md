@@ -4,6 +4,8 @@
 
 ![Simulation](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/simulation.png)
 
+![SkyCity Church](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/landing.png)
+
 ---
 
 Effect Node METAVERSE is a open source boilerplate project for helping everyone own their own metaverse.
