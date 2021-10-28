@@ -2,7 +2,7 @@
 
 ## Work in Progress
 
-![Simulation](https://github.com/wonglok/effectnode-metaverse/docs/simulation.png)
+![Simulation](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/simulation.png)
 
 ---
 
