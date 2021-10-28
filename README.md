@@ -1,12 +1,6 @@
 # EffectNode Metaverse OpenSource
 
-## Work in Progress
-
-![Simulation](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/simulation.png)
-
 ![SkyCity Church](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/landing.png)
-
----
 
 Effect Node METAVERSE is a open source boilerplate project for helping everyone own their own metaverse.
 
@@ -17,6 +11,10 @@ The Vision for Effect Node Metaverse is that everyone should be able to own a pi
 We all don’t really like having to pay a royalty fee to every creation that we yearn to make.
 
 ---
+
+# VFX on 3D Web
+
+![Simulation](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/simulation.png)
 
 Effet Node is an on-going group of projects made by Lok Lok.
 
@@ -33,6 +31,12 @@ Effect Node has evolved throughout the years to improve the developer experience
 The sole inventor of Effect Node, Lok Lok, wants to share many of his expertise in webgl engineering, through this open source boilerplate
 
 ---
+
+## Crawling on METAVERSE made Possible
+
+[StarLink API](https://metaverse.effectnode.com/api/starlink)
+
+![Discovery](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/discovery.png)
 
 MIT LICENSED
 
