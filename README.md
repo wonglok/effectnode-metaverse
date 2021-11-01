@@ -1,4 +1,4 @@
-# EffectNode Metaverse OpenSource
+# EffectNode Metaverse - Distributed 3D Metaverse
 
 ![SkyCity Church](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/landing.png)
 
