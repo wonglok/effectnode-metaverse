@@ -1,4 +1,4 @@
-# EffectNode Metaverse - Distributed 3D Content Boilerplate
+# EffectNode Metaverse - a Boilerplate
 
 ![SkyCity Church](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/landing.png)
 
