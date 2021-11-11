@@ -59,16 +59,16 @@ export let getPages = () => {
         ssr: false,
       }),
     },
-    {
-      placeID: `fashion`,
-      slug: `/place/fashion`,
-      title: "Fashion",
-      thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
-      compo: dynamic(() => import("./fashion/Fashion.js"), {
-        ssr: false,
-        //
-      }),
-    },
+    // {
+    //   placeID: `fashion`,
+    //   slug: `/place/fashion`,
+    //   title: "Fashion",
+    //   thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
+    //   compo: dynamic(() => import("./fashion/Fashion.js"), {
+    //     ssr: false,
+    //     //
+    //   }),
+    // },
   ];
 };
 
