@@ -66,6 +66,7 @@ export let getPages = () => {
       thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
       compo: dynamic(() => import("./fashion/Fashion.js"), {
         ssr: false,
+        //
       }),
     },
   ];
