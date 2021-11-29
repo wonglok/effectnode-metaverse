@@ -59,6 +59,15 @@ export let getPages = () => {
         ssr: false,
       }),
     },
+    {
+      placeID: `dove`,
+      slug: `/place/dove`,
+      title: "Thank you Jesus - Dove",
+      thumbnail: `${SiteBaseURL}/preview/simulation-thumb.png`,
+      compo: dynamic(() => import("./Spirit/Spirit.js"), {
+        ssr: false,
+      }),
+    },
     // {
     //   placeID: `fashion`,
     //   slug: `/place/fashion`,
