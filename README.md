@@ -12,6 +12,14 @@ We all don’t really like having to pay a royalty fee to every creation that we
 
 ---
 
+## Anthem Awards Finalists
+
+![Anthem-finalist](https://user-images.githubusercontent.com/4082826/151679718-9faf470c-0f03-4100-ada1-e976304d1306.png)
+
+https://www.anthemawards.com/finalists/#responsible-technology/product-innovation-or-service-categories-for-profit/25351/25455 
+
+----
+
 ## VFX on 3D Web
 
 ![Simulation](https://github.com/wonglok/effectnode-metaverse/raw/master/docs/simulation.png)
