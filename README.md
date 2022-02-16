@@ -11,12 +11,13 @@ The Vision for Effect Node Metaverse is that everyone should be able to own a pi
 We all don’t really like having to pay a royalty fee to every creation that we yearn to make.
 
 ---
+# Update!! - 2022-02-16
 
-## Anthem Awards Finalists
+## Anthem Awards Bronze
 
-![Anthem-finalist](https://user-images.githubusercontent.com/4082826/151679718-9faf470c-0f03-4100-ada1-e976304d1306.png)
+![Anthem-bronze-winner-announ-share-square-2 (1)](https://user-images.githubusercontent.com/4082826/154196891-7af02d39-ad58-4160-8e57-1643af5934f3.png)
 
-https://www.anthemawards.com/finalists/#responsible-technology/product-innovation-or-service-categories-for-profit/25351/25455 
+https://www.anthemawards.com/winners/list/entry/#responsible-technology/product-innovation-or-service-categories-for-profit/effectnode-metaverse-opensource-boilerplate/1972/25455/337622
 
 ----
 
