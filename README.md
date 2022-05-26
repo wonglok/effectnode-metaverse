@@ -11,9 +11,22 @@ The Vision for Effect Node Metaverse is that everyone should be able to own a pi
 We all don’t really like having to pay a royalty fee to every creation that we yearn to make.
 
 ---
+
+
 # Update!! - 2022-04-05
 
-## Webbys Awards 2025
+## Telly Awards 2022
+![Bronze_Trophy_Large](https://user-images.githubusercontent.com/4082826/170433686-cd9138c4-f11f-47e0-96fd-ed660a2ed233.png)
+![Silver_Trophy_Large](https://user-images.githubusercontent.com/4082826/170433703-3dfc0b29-b5bb-4104-b2ab-73e4cc8f8120.png)
+
+https://www.tellyawards.com/winners/2022/immersive-mixed-reality/general-social-responsibility/effectnode-metaverse-opensource-template/269020/
+
+https://www.tellyawards.com/winners/2022/immersive-mixed-reality/craft-metaverse/effectnode-metaverse-opensource-template/275332/
+
+
+# Update!! - 2022-04-05
+
+## Webbys Awards 2022
 
 ![webbys](https://user-images.githubusercontent.com/4082826/161773205-7c79fad8-31f2-4136-8c56-0c57bda43cde.png)
 
