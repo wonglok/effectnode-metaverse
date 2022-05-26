@@ -13,7 +13,7 @@ We all don’t really like having to pay a royalty fee to every creation that we
 ---
 
 
-# Update!! - 2022-04-05
+# Update!! - 2022-05-26
 
 ## Telly Awards 2022
 ![Bronze_Trophy_Large](https://user-images.githubusercontent.com/4082826/170433686-cd9138c4-f11f-47e0-96fd-ed660a2ed233.png)
